@@ -4,7 +4,8 @@
   "start_url": "admin-panel-tati.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#3367D6",
+  "theme_color": "#B22222",
+  "description": "Panel de administración El Rincón de la Tati",
   "icons": [
     {
       "src": "icon-192.png",
