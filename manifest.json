@@ -1,7 +1,7 @@
 {
   "name": "Admin Panel Tati",
   "short_name": "AdminTati",
-  "start_url": "admin-panel-tati.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#B22222",
