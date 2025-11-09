@@ -326,6 +326,48 @@
             border-radius: 8px;
             border: 2px solid #d4af37;
         }
+
+        /* Estilos para subir archivos */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, #B22222, #FF6B6B);
+            color: white;
+            border: 2px dashed #fff;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .file-input-label:hover {
+            background: linear-gradient(135deg, #9A1E1E, #E55A5A);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(178, 34, 34, 0.3);
+        }
+
+        .file-name {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -390,11 +432,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label>URL de la Imagen:</label>
-                    <input type="url" id="productoImagen" required placeholder="https://...">
+                    <label>Imagen del Producto:</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="productoImagenFile" accept="image/*" capture="environment">
+                        <label for="productoImagenFile" class="file-input-label">
+                            📸 Seleccionar de la Galería o Tomar Foto
+                        </label>
+                    </div>
                     <small style="color: #666; display: block; margin-top: 5px;">
-                        Pega aquí el enlace de la imagen (debe ser de Dropbox, Google Drive, etc.)
+                        Toca para seleccionar imagen de la galería o tomar foto con la cámara
                     </small>
+                </div>
+
+                <div class="form-group">
+                    <label>O pegar URL de Imagen:</label>
+                    <input type="url" id="productoImagenUrl" placeholder="https://...">
                 </div>
 
                 <div class="image-preview" id="imagePreview"></div>
@@ -426,6 +478,7 @@
 
         let currentUser = null;
         let editandoId = null;
+        let imagenSeleccionada = null;
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -512,6 +565,8 @@
             document.getElementById('productoForm').reset();
             document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('modalAlert').innerHTML = '';
+            imagenSeleccionada = null;
+            document.querySelector('.file-name')?.remove();
             document.getElementById('productoModal').style.display = 'block';
         };
 
@@ -519,6 +574,11 @@
             editandoId = id;
             document.getElementById('modalTitulo').textContent = 'Editar Producto';
             document.getElementById('modalAlert').innerHTML = '';
+            
+            // Limpiar campos de imagen
+            document.getElementById('productoImagenFile').value = '';
+            document.querySelector('.file-name')?.remove();
+            imagenSeleccionada = null;
             
             try {
                 const docSnap = await getDocs(collection(db, 'productos'));
@@ -534,10 +594,15 @@
                     document.getElementById('productoNombre').value = productoData.nombre;
                     document.getElementById('productoPrecio').value = productoData.precio;
                     document.getElementById('productoDescripcion').value = productoData.descripcion || '';
-                    document.getElementById('productoImagen').value = productoData.imagen;
                     
-                    if (productoData.imagen) {
+                    // Si la imagen es una URL (no base64)
+                    if (productoData.imagen && productoData.imagen.startsWith('http')) {
+                        document.getElementById('productoImagenUrl').value = productoData.imagen;
                         document.getElementById('imagePreview').innerHTML = `<img src="${productoData.imagen}" alt="Preview">`;
+                    } else if (productoData.imagen) {
+                        // Si es base64, mostrar preview pero no en campos editables
+                        document.getElementById('imagePreview').innerHTML = `<img src="${productoData.imagen}" alt="Preview" style="max-width: 100%; border-radius: 8px;">`;
+                        document.getElementById('productoImagenUrl').value = '';
                     }
                     
                     document.getElementById('productoModal').style.display = 'block';
@@ -561,19 +626,74 @@
             }
         };
 
+        // Preview de imagen desde archivo
+        document.getElementById('productoImagenFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Mostrar nombre del archivo
+                document.querySelector('.file-name')?.remove();
+                const fileName = document.createElement('div');
+                fileName.className = 'file-name';
+                fileName.textContent = `📁 ${file.name}`;
+                this.parentNode.appendChild(fileName);
+                
+                // Crear preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100%; border-radius: 8px;">`;
+                    imagenSeleccionada = e.target.result; // Guardar imagen en base64
+                };
+                reader.readAsDataURL(file);
+                
+                // Limpiar campo de URL
+                document.getElementById('productoImagenUrl').value = '';
+            }
+        });
+
+        // Preview de imagen desde URL (mantener funcionalidad existente)
+        document.getElementById('productoImagenUrl').addEventListener('input', function(e) {
+            const url = e.target.value;
+            const preview = document.getElementById('imagePreview');
+            
+            if (url) {
+                preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.src='https://via.placeholder.com/200?text=URL+inválida'">`;
+                imagenSeleccionada = null; // Limpiar imagen de archivo
+                // Limpiar input de archivo
+                document.getElementById('productoImagenFile').value = '';
+                document.querySelector('.file-name')?.remove();
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+
+        // Guardar producto (agregar o editar)
         document.getElementById('productoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const nombre = document.getElementById('productoNombre').value;
             const precio = parseInt(document.getElementById('productoPrecio').value);
             const descripcion = document.getElementById('productoDescripcion').value;
-            const imagen = document.getElementById('productoImagen').value;
+            const imagenUrl = document.getElementById('productoImagenUrl').value;
+
+            let imagenFinal = imagenUrl;
+
+            // Si se seleccionó una imagen desde el celular
+            if (imagenSeleccionada) {
+                imagenFinal = imagenSeleccionada; // Usar la imagen en base64
+            }
+
+            // Validar que haya al menos una imagen
+            if (!imagenFinal && !imagenSeleccionada) {
+                mostrarAlerta('modalAlert', 'Por favor, selecciona una imagen o ingresa una URL', 'error');
+                return;
+            }
 
             const productoData = {
                 nombre,
                 precio,
                 descripcion,
-                imagen,
+                imagen: imagenFinal,
                 fechaActualizacion: new Date().toISOString()
             };
 
@@ -589,6 +709,10 @@
                 setTimeout(() => {
                     cerrarModal();
                     cargarProductos();
+                    // Limpiar imagen seleccionada
+                    imagenSeleccionada = null;
+                    document.getElementById('productoImagenFile').value = '';
+                    document.querySelector('.file-name')?.remove();
                 }, 1500);
             } catch (error) {
                 mostrarAlerta('modalAlert', 'Error al guardar producto', 'error');
@@ -596,20 +720,12 @@
             }
         });
 
-        document.getElementById('productoImagen').addEventListener('input', (e) => {
-            const url = e.target.value;
-            const preview = document.getElementById('imagePreview');
-            
-            if (url) {
-                preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.src='https://via.placeholder.com/200?text=URL+inválida'">`;
-            } else {
-                preview.innerHTML = '';
-            }
-        });
-
         window.cerrarModal = () => {
             document.getElementById('productoModal').style.display = 'none';
             document.getElementById('productoForm').reset();
+            document.getElementById('imagePreview').innerHTML = '';
+            imagenSeleccionada = null;
+            document.querySelector('.file-name')?.remove();
             editandoId = null;
         };
 
@@ -673,6 +789,44 @@
             navigator.serviceWorker.register('sw.js')
                 .then(() => console.log('Service Worker registrado'))
                 .catch(err => console.log('Error SW:', err));
+        }
+
+        // Detectar iPhone y mostrar ayuda
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+
+        if (isIOS) {
+            const iosHelp = document.createElement('div');
+            iosHelp.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #007AFF;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    font-size: 14px;
+                    text-align: center;
+                    z-index: 10001;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    max-width: 90%;
+                ">
+                    <strong>📱 Instalar en iPhone:</strong><br>
+                    Usa Safari → Compartir (📤) → "Agregar a Pantalla de Inicio"
+                    <button onclick="this.parentElement.style.display='none'" style="
+                        background: white;
+                        color: #007AFF;
+                        border: none;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        margin-left: 10px;
+                        cursor: pointer;
+                    ">OK</button>
+                </div>
+            `;
+            document.body.appendChild(iosHelp);
         }
     </script>
 </body>
