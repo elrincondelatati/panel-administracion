@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Admin - El Rincón de la Tati</title>
+
+    <!-- Fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #FFE8D9;
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            padding: 20px;
+        }
+
+        /* LOGIN */
+        #loginSection {
+            max-width: 420px;
+            margin: 80px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        #loginSection h2 {
+            text-align: center;
+            color: #B71C1C;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #5a2323;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e3b070;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: #B71C1C;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #B71C1C;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .btn-login:hover {
+            background: #a01717;
+        }
+
+        /* PANEL ADMIN */
+        #adminPanel {
+            display: none;
+        }
+
+        header {
+            background: white;
+            padding: 18px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #B71C1C;
+            margin: 0;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: #c62828;
+            color: white;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background: #a31212;
+        }
+
+        /* PRODUCTOS GRID */
+        .productos-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 20px;
+        }
+
+        .producto-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+            transition: 0.3s;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .producto-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #fff8ef;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .agotado-label {
+            display: inline-block;
+            background: #d32f2f;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .producto-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-edit {
+            flex: 1;
+            background: #f39c12;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            flex: 1;
+            background: #e53935;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* MODAL */
+        #productoModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 20px;
+        }
+
+        .modal-close {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .image-preview img {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginSection">
+    <h2>🔐 Administrador - Acceso</h2>
+
+    <div class="form-group">
+        <label>Clave de acceso</label>
+        <input type="password" id="adminPass" placeholder="Ingresa tu clave...">
+    </div>
+
+    <button class="btn-login" onclick="loginAdmin()">Ingresar</button>
+</div>
+
+<!-- PANEL ADMIN -->
+<div id="adminPanel">
+    <header>
+        <h1>🎁 Panel de Administración</h1>
+        <button class="btn-logout" onclick="logoutAdmin()">Cerrar sesión</button>
+    </header>
+
+    <button class="btn-login" style="background:#1e88e5;" onclick="abrirModalAgregar()">➕ Agregar Producto</button>
+
+    <div id="productosLista" class="productos-lista"></div>
+</div>
+
+<!-- MODAL -->
+<div id="productoModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="cerrarModal()">&times;</span>
+
+        <h2 id="modalTitulo">Agregar Producto</h2>
+
+        <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" id="pNombre">
+        </div>
+
+        <div class="form-group">
+            <label>Precio</label>
+            <input type="number" id="pPrecio">
+        </div>
+
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="pDescripcion"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Categoría</label>
+            <select id="pCategoria">
+                <option value="navidad">Navidad</option>
+                <option value="tejido">Tejido</option>
+                <option value="hogar">Hogar</option>
+                <option value="niños">Niños</option>
+                <option value="mujer">Mujer</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Producto agotado</label>
+            <input type="checkbox" id="pAgotado">
+        </div>
+
+        <div class="form-group">
+            <label>Imagen</label>
+            <input type="file" id="pImagen" accept="image/*">
+        </div>
+
+        <div class="image-preview" id="previewImagen"></div>
+
+        <button class="btn-save" onclick="guardarProducto()">Guardar</button>
+    </div>
+</div>
+
+<!-- SUPABASE -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<!-- JS se envía en la PARTE 2 -->
+<script>
+// ------------------ CONFIGURACIÓN SUPABASE ------------------
+  const SUPABASE_URL = 'https://wazkoegfeuttutfoqfjt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndhemtvZWdmZXV0dHV0Zm9xZmp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzOTExNDUsImV4cCI6MjA3OTk2NzE0NX0.9DUTvS_tekHNPFZHCA_6XHIfQ9ize40xXKP54XZf84k';
+
+  const { createClient } = supabase;
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Nombre del bucket de imágenes en Supabase Storage
+  // 👉 Si tu bucket tiene otro nombre, cámbialo aquí:
+  const SUPABASE_BUCKET = 'productos';
+
+  // ------------------ LOGIN SENCILLO ------------------
+  const ADMIN_PASSWORD = 'tati2025'; // 🔐 Cámbiala si quieres
+
+  const loginSection = document.getElementById('loginSection');
+  const adminPanel   = document.getElementById('adminPanel');
+
+  function loginAdmin() {
+    const passInput = document.getElementById('adminPass');
+    const valor = passInput.value.trim();
+
+    if (!valor) {
+      alert('Ingresa la clave de administrador');
+      return;
+    }
+
+    if (valor === ADMIN_PASSWORD) {
+      localStorage.setItem('tati_admin_logged', '1');
+      mostrarAdmin();
+      cargarProductos();
+    } else {
+      alert('Clave incorrecta');
+    }
+  }
+
+  function logoutAdmin() {
+    localStorage.removeItem('tati_admin_logged');
+    mostrarLogin();
+  }
+
+  function mostrarAdmin() {
+    loginSection.style.display = 'none';
+    adminPanel.style.display   = 'block';
+  }
+
+  function mostrarLogin() {
+    loginSection.style.display = 'block';
+    adminPanel.style.display   = 'none';
+  }
+
+  // Al cargar la página, revisar si ya estaba logueado
+  window.addEventListener('DOMContentLoaded', () => {
+    const logged = localStorage.getItem('tati_admin_logged') === '1';
+    if (logged) {
+      mostrarAdmin();
+      cargarProductos();
+    } else {
+      mostrarLogin();
+    }
+  });
+
+  // Hacemos visibles las funciones que se usan en HTML (onclick)
+  window.loginAdmin  = loginAdmin;
+  window.logoutAdmin = logoutAdmin;
+
+  // ------------------ ESTADO GLOBAL ------------------
+  let productosCache = [];
+  let editandoId = null;
+  let archivoImagenActual = null; // File seleccionado en el input
+  let urlImagenActual = null;     // URL actual en caso de editar
+
+  const productosListaEl = document.getElementById('productosLista');
+  const modalEl          = document.getElementById('productoModal');
+  const modalTituloEl    = document.getElementById('modalTitulo');
+
+  const pNombreEl       = document.getElementById('pNombre');
+  const pPrecioEl       = document.getElementById('pPrecio');
+  const pDescripcionEl  = document.getElementById('pDescripcion');
+  const pCategoriaEl    = document.getElementById('pCategoria');
+  const pAgotadoEl      = document.getElementById('pAgotado');
+  const pImagenInputEl  = document.getElementById('pImagen');
+  const previewImagenEl = document.getElementById('previewImagen');
+
+  // ------------------ CARGAR PRODUCTOS DESDE SUPABASE ------------------
+  async function cargarProductos() {
+    productosListaEl.innerHTML = 'Cargando productos...';
+
+    const { data, error } = await supabaseClient
+      .from('productos')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error al cargar productos:', error);
+      productosListaEl.innerHTML = '<p style="color:red;">Error al cargar productos</p>';
+      return;
+    }
+
+    productosCache = data || [];
+    renderProductos();
+  }
+
+  function renderProductos() {
+    if (!productosCache.length) {
+      productosListaEl.innerHTML = `
+        <p style="text-align:center; padding:30px; color:#555;">
+          Aún no hay productos. Agrega el primero con el botón "Agregar Producto".
+        </p>
+      `;
+      return;
+    }
+
+    productosListaEl.innerHTML = '';
+
+    productosCache.forEach(prod => {
+      const card = document.createElement('div');
+      card.className = 'producto-card' + (prod.agotado ? ' agotado' : '');
+
+      const imagenUrl = prod.imagen_url || 'https://via.placeholder.com/300x200?text=Sin+imagen';
+
+      // Etiqueta AGOTADO si corresponde
+      if (prod.agotado) {
+        const badge = document.createElement('div');
+        badge.className = 'agotado-label';
+        badge.textContent = 'AGOTADO';
+        card.appendChild(badge);
+      }
+
+      const img = document.createElement('img');
+      img.src = imagenUrl;
+      img.alt = prod.nombre || 'Producto';
+      img.onerror = () => {
+        img.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+      };
+      card.appendChild(img);
+
+      const title = document.createElement('h3');
+      title.textContent = prod.nombre || 'Sin nombre';
+      card.appendChild(title);
+
+      const precio = document.createElement('p');
+      precio.style.color = '#B71C1C';
+      precio.style.fontWeight = '700';
+      precio.textContent = `$${formatearPrecio(prod.precio || 0)} CLP`;
+      card.appendChild(precio);
+
+      const categoria = document.createElement('p');
+      categoria.style.fontSize = '0.9em';
+      categoria.style.color = '#7a5a3a';
+      categoria.textContent = `Categoría: ${prod.categoria || 'sin categoría'}`;
+      card.appendChild(categoria);
+
+      const desc = document.createElement('p');
+      desc.style.fontSize = '0.9em';
+      desc.style.color = '#555';
+      desc.textContent = prod.descripcion || 'Sin descripción';
+      card.appendChild(desc);
+
+      const actions = document.createElement('div');
+      actions.className = 'producto-actions';
+
+      const btnEdit = document.createElement('button');
+      btnEdit.className = 'btn-edit';
+      btnEdit.textContent = '✏️ Editar';
+      btnEdit.onclick = () => editarProducto(prod.id);
+      actions.appendChild(btnEdit);
+
+      const btnDelete = document.createElement('button');
+      btnDelete.className = 'btn-delete';
+      btnDelete.textContent = '🗑️ Eliminar';
+      btnDelete.onclick = () => eliminarProducto(prod.id, prod.nombre);
+      actions.appendChild(btnDelete);
+
+      card.appendChild(actions);
+
+      productosListaEl.appendChild(card);
+    });
+  }
+
+  function formatearPrecio(num) {
+    const n = Number(num) || 0;
+    return n.toLocaleString('es-CL');
+  }
+
+  // ------------------ MODAL: ABRIR / CERRAR ------------------
+  function abrirModalAgregar() {
+    editandoId = null;
+    archivoImagenActual = null;
+    urlImagenActual = null;
+
+    modalTituloEl.textContent = 'Agregar Producto';
+
+    pNombreEl.value      = '';
+    pPrecioEl.value      = '';
+    pDescripcionEl.value = '';
+    pCategoriaEl.value   = 'navidad';
+    pAgotadoEl.checked   = false;
+    pImagenInputEl.value = '';
+    previewImagenEl.innerHTML = '';
+
+    modalEl.style.display = 'block';
+  }
+
+  function cerrarModal() {
+    modalEl.style.display = 'none';
+    editandoId = null;
+    archivoImagenActual = null;
+    urlImagenActual = null;
+    pImagenInputEl.value = '';
+    previewImagenEl.innerHTML = '';
+  }
+
+  window.abrirModalAgregar = abrirModalAgregar;
+  window.cerrarModal       = cerrarModal;
+
+  // Cerrar modal si clickea fuera del contenido
+  window.addEventListener('click', (e) => {
+    if (e.target === modalEl) {
+      cerrarModal();
+    }
+  });
+
+  // ------------------ EDITAR PRODUCTO ------------------
+  async function editarProducto(id) {
+    const prod = productosCache.find(p => String(p.id) === String(id));
+    if (!prod) {
+      alert('No se encontró el producto');
+      return;
+    }
+
+    editandoId = prod.id;
+    modalTituloEl.textContent = 'Editar Producto';
+
+    pNombreEl.value      = prod.nombre || '';
+    pPrecioEl.value      = prod.precio || '';
+    pDescripcionEl.value = prod.descripcion || '';
+    pCategoriaEl.value   = prod.categoria || 'navidad';
+    pAgotadoEl.checked   = !!prod.agotado;
+
+    urlImagenActual = prod.imagen_url || null;
+    archivoImagenActual = null;
+    pImagenInputEl.value = '';
+
+    if (urlImagenActual) {
+      previewImagenEl.innerHTML = `<img src="${urlImagenActual}" alt="Imagen producto">`;
+    } else {
+      previewImagenEl.innerHTML = '';
+    }
+
+    modalEl.style.display = 'block';
+  }
+
+  window.editarProducto = editarProducto;
+
+  // ------------------ ELIMINAR PRODUCTO ------------------
+  async function eliminarProducto(id, nombre) {
+    const seguro = confirm(`¿Eliminar el producto "${nombre}"?`);
+    if (!seguro) return;
+
+    const { error } = await supabaseClient
+      .from('productos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error al eliminar:', error);
+      alert('Error al eliminar el producto');
+      return;
+    }
+
+    // Actualizar listado
+    productosCache = productosCache.filter(p => p.id !== id);
+    renderProductos();
+  }
+
+  window.eliminarProducto = eliminarProducto;
+
+  // ------------------ SUBIR IMAGEN A SUPABASE STORAGE ------------------
+  async function subirImagenASupabase(file) {
+    const ext = file.name.split('.').pop();
+    const nombreLimpio = file.name.replace(/\s+/g, '_').toLowerCase();
+    const fileName = `${Date.now()}_${nombreLimpio}`;
+    const filePath = `productos/${fileName}`;
+
+    const { data, error } = await supabaseClient
+      .storage
+      .from(SUPABASE_BUCKET)
+      .upload(filePath, file);
+
+    if (error) {
+      console.error('Error subiendo imagen:', error);
+      throw error;
+    }
+
+    const { data: publicData } = supabaseClient
+      .storage
+      .from(SUPABASE_BUCKET)
+      .getPublicUrl(filePath);
+
+    return publicData.publicUrl;
+  }
+
+  // ------------------ INPUT IMAGEN: PREVIEW ------------------
+  pImagenInputEl.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    archivoImagenActual = null;
+
+    if (!file) {
+      previewImagenEl.innerHTML = '';
+      return;
+    }
+
+    archivoImagenActual = file;
+    urlImagenActual = null; // si sube archivo nuevo, olvidamos la URL anterior
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      previewImagenEl.innerHTML = `<img src="${ev.target.result}" alt="Preview">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ------------------ GUARDAR (AGREGAR / EDITAR) ------------------
+  async function guardarProducto() {
+    const nombre      = pNombreEl.value.trim();
+    const precio      = Number(pPrecioEl.value) || 0;
+    const descripcion = pDescripcionEl.value.trim();
+    const categoria   = pCategoriaEl.value;
+    const agotado     = pAgotadoEl.checked;
+
+    if (!nombre || precio <= 0) {
+      alert('Nombre y precio deben ser válidos');
+      return;
+    }
+
+    let imagenFinalUrl = urlImagenActual || '';
+
+    try {
+      // Si seleccionó un archivo nuevo, lo subimos
+      if (archivoImagenActual) {
+        imagenFinalUrl = await subirImagenASupabase(archivoImagenActual);
+      }
+
+      if (!imagenFinalUrl) {
+        // Si quieres obligar imagen, descomenta esta validación:
+        // alert('Debes seleccionar una imagen');
+        // return;
+      }
+
+      const dataProducto = {
+        nombre,
+        precio,
+        descripcion,
+        categoria,
+        imagen_url: imagenFinalUrl,
+        agotado
+      };
+
+      if (!editandoId) {
+        // INSERTAR
+        const { data, error } = await supabaseClient
+          .from('productos')
+          .insert([dataProducto])
+          .select();
+
+        if (error) {
+          console.error('Error al agregar:', error);
+          alert('Error al agregar producto');
+          return;
+        }
+
+        // Agregar al cache y re-render
+        if (data && data.length > 0) {
+          productosCache.push(data[0]);
+          renderProductos();
+        }
+      } else {
+        // ACTUALIZAR
+        const { error } = await supabaseClient
+          .from('productos')
+          .update(dataProducto)
+          .eq('id', editandoId);
+
+        if (error) {
+          console.error('Error al actualizar:', error);
+          alert('Error al actualizar producto');
+          return;
+        }
+
+        // Actualizar cache
+        productosCache = productosCache.map(p =>
+          p.id === editandoId ? { ...p, ...dataProducto } : p
+        );
+        renderProductos();
+      }
+
+      cerrarModal();
+    } catch (err) {
+      console.error('Error guardando producto:', err);
+      alert('Error al guardar producto');
+    }
+  }
+
+  window.guardarProducto = guardarProducto;
+</script>
+
+</body>
+</html>
