@@ -3,831 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#B22222">
-    <link rel="manifest" href="manifest.json">
     <title>🔐 Admin - El Rincón de la Tati</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
+    <!-- Fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #FFEDE3 0%, #FFD6BA 100%);
-            min-height: 100vh;
+            background: #FFE8D9;
+            margin: 0;
+            font-family: "Poppins", sans-serif;
             padding: 20px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* LOGIN */
+        #loginSection {
+            max-width: 420px;
+            margin: 80px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        #loginSection h2 {
+            text-align: center;
+            color: #B71C1C;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #5a2323;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e3b070;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: #B71C1C;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #B71C1C;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .btn-login:hover {
+            background: #a01717;
+        }
+
+        /* PANEL ADMIN */
+        #adminPanel {
+            display: none;
         }
 
         header {
             background: white;
-            padding: 20px;
+            padding: 18px;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
-        h1 {
-            color: #B22222;
-            font-size: 1.8em;
+        header h1 {
+            color: #B71C1C;
+            margin: 0;
         }
 
         .btn-logout {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
             padding: 10px 20px;
-            border-radius: 8px;
+            background: #c62828;
+            color: white;
+            border-radius: 10px;
+            border: none;
             cursor: pointer;
-            font-size: 1em;
-            transition: 0.3s;
         }
 
         .btn-logout:hover {
-            background-color: #c0392b;
+            background: #a31212;
         }
 
-        /* Sección de Login */
-        #loginSection {
-            max-width: 400px;
-            margin: 100px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-
-        #loginSection h2 {
-            color: #B22222;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            color: #5A1E1E;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #d4af37;
-            border-radius: 8px;
-            font-size: 1em;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: #B22222;
-            box-shadow: 0 0 8px rgba(178, 34, 34, 0.3);
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .btn-primary {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            width: 100%;
-            transition: 0.3s;
-            font-weight: bold;
-        }
-
-        .btn-primary:hover {
-            background-color: #229954;
-        }
-
-        .btn-add {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            transition: 0.3s;
-            font-weight: bold;
-        }
-
-        .btn-add:hover {
-            background-color: #2980b9;
-        }
-
-        /* Lista de Productos */
+        /* PRODUCTOS GRID */
         .productos-lista {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
             gap: 20px;
-            margin-top: 20px;
         }
 
         .producto-card {
             background: white;
-            border-radius: 12px;
             padding: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+            transition: 0.3s;
         }
 
         .producto-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
         }
 
         .producto-card img {
             width: 100%;
             height: 200px;
             object-fit: contain;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            background: #fff8ef;
+            border-radius: 12px;
             margin-bottom: 10px;
         }
 
-        .producto-card h3 {
-            color: #5A1E1E;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-
-        .producto-card .precio {
-            color: #B22222;
-            font-size: 1.3em;
+        .agotado-label {
+            display: inline-block;
+            background: #d32f2f;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
             font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .producto-card .descripcion {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 15px;
-            line-height: 1.4;
+            margin-bottom: 5px;
         }
 
         .producto-actions {
             display: flex;
             gap: 10px;
+            margin-top: 10px;
         }
 
         .btn-edit {
             flex: 1;
-            background-color: #f39c12;
-            color: white;
+            background: #f39c12;
             border: none;
-            padding: 8px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
             cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-edit:hover {
-            background-color: #e67e22;
         }
 
         .btn-delete {
             flex: 1;
-            background-color: #e74c3c;
-            color: white;
+            background: #e53935;
             border: none;
-            padding: 8px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
             cursor: pointer;
-            transition: 0.3s;
         }
 
-        .btn-delete:hover {
-            background-color: #c0392b;
-        }
-
-        /* Modal */
-        .modal {
+        /* MODAL */
+        #productoModal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            z-index: 1000;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            padding: 40px;
             overflow-y: auto;
-            padding: 20px;
         }
 
         .modal-content {
             background: white;
             max-width: 600px;
-            margin: 50px auto;
-            padding: 30px;
-            border-radius: 15px;
-            position: relative;
+            margin: auto;
+            padding: 25px;
+            border-radius: 20px;
         }
 
         .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 28px;
-            font-weight: bold;
-            color: #999;
+            float: right;
             cursor: pointer;
-            background: none;
-            border: none;
-        }
-
-        .modal-close:hover {
-            color: #333;
-        }
-
-        .modal h2 {
-            color: #B22222;
-            margin-bottom: 25px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
+            font-size: 24px;
             font-weight: bold;
         }
 
-        .alert-error {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 2px solid #ef5350;
-        }
-
-        .alert-success {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-            border: 2px solid #66bb6a;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #B22222;
-            font-size: 1.2em;
-        }
-
-        @media (max-width: 600px) {
-            .productos-lista {
-                grid-template-columns: 1fr;
-            }
-
-            header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            h1 {
-                font-size: 1.4em;
-            }
-        }
-
-        .image-preview {
+        .btn-save {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            border: none;
+            color: white;
+            border-radius: 10px;
             margin-top: 15px;
-            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
         }
 
         .image-preview img {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-            border: 2px solid #d4af37;
-        }
-
-        /* Estilos para subir archivos */
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
             width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-input-label {
-            display: block;
-            padding: 15px;
-            background: linear-gradient(135deg, #B22222, #FF6B6B);
-            color: white;
-            border: 2px dashed #fff;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .file-input-label:hover {
-            background: linear-gradient(135deg, #9A1E1E, #E55A5A);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(178, 34, 34, 0.3);
-        }
-
-        .file-name {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-            font-style: italic;
+            margin-top: 10px;
+            border-radius: 10px;
         }
     </style>
 </head>
+
 <body>
 
-    <!-- Sección de Login -->
-    <div id="loginSection">
-        <h2>🔐 Acceso Administrador</h2>
-        <div id="loginAlert"></div>
-        <form id="loginForm">
-            <div class="form-group">
-                <label>Email:</label>
-                <input type="email" id="loginEmail" required placeholder="tu@email.com">
-            </div>
-            <div class="form-group">
-                <label>Contraseña:</label>
-                <input type="password" id="loginPassword" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn-primary">Iniciar Sesión</button>
-        </form>
+<!-- LOGIN -->
+<div id="loginSection">
+    <h2>🔐 Administrador - Acceso</h2>
+
+    <div class="form-group">
+        <label>Clave de acceso</label>
+        <input type="password" id="adminPass" placeholder="Ingresa tu clave...">
     </div>
 
-    <!-- Panel de Administración -->
-    <div id="adminPanel" class="hidden">
-        <div class="container">
-            <header>
-                <div>
-                    <h1>🎁 Panel de Administración</h1>
-                    <p style="color: #666; margin-top: 5px;">Gestiona tu catálogo de productos</p>
-                </div>
-                <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
-            </header>
+    <button class="btn-login" onclick="loginAdmin()">Ingresar</button>
+</div>
 
-            <button class="btn-add" onclick="abrirModalAgregar()">➕ Agregar Nuevo Producto</button>
+<!-- PANEL ADMIN -->
+<div id="adminPanel">
+    <header>
+        <h1>🎁 Panel de Administración</h1>
+        <button class="btn-logout" onclick="logoutAdmin()">Cerrar sesión</button>
+    </header>
 
-            <div id="loadingProductos" class="loading">Cargando productos...</div>
-            <div id="productosLista" class="productos-lista"></div>
+    <button class="btn-login" style="background:#1e88e5;" onclick="abrirModalAgregar()">➕ Agregar Producto</button>
+
+    <div id="productosLista" class="productos-lista"></div>
+</div>
+
+<!-- MODAL -->
+<div id="productoModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="cerrarModal()">&times;</span>
+
+        <h2 id="modalTitulo">Agregar Producto</h2>
+
+        <div class="form-group">
+            <label>Nombre</label>
+            <input type="text" id="pNombre">
         </div>
-    </div>
 
-    <!-- Modal para Agregar/Editar Producto -->
-    <div id="productoModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="cerrarModal()">&times;</button>
-            <h2 id="modalTitulo">Agregar Producto</h2>
-            <div id="modalAlert"></div>
-            <form id="productoForm">
-                <input type="hidden" id="productoId">
-                
-                <div class="form-group">
-                    <label>Nombre del Producto:</label>
-                    <input type="text" id="productoNombre" required placeholder="Ej: Pie de árbol rojo">
-                </div>
-
-                <div class="form-group">
-                    <label>Precio:</label>
-                    <input type="number" id="productoPrecio" required placeholder="5000" min="0">
-                </div>
-
-                <div class="form-group">
-                    <label>Descripción:</label>
-                    <textarea id="productoDescripcion" placeholder="Describe el producto..."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Imagen del Producto:</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="productoImagenFile" accept="image/*">
-                        <label for="productoImagenFile" class="file-input-label">
-                            📸 Abrir Galería o Usar Cámara
-                        </label>
-                    </div>
-                    <small style="color: #666; display: block; margin-top: 5px;">
-                        Toca para seleccionar imagen de la galería o usar la cámara
-                    </small>
-                </div>
-
-                <div class="form-group">
-                    <label>O pegar URL de Imagen:</label>
-                    <input type="url" id="productoImagenUrl" placeholder="https://...">
-                </div>
-
-                <div class="image-preview" id="imagePreview"></div>
-
-                <button type="submit" class="btn-primary" style="margin-top: 20px;">Guardar Producto</button>
-            </form>
+        <div class="form-group">
+            <label>Precio</label>
+            <input type="number" id="pPrecio">
         </div>
+
+        <div class="form-group">
+            <label>Descripción</label>
+            <textarea id="pDescripcion"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Categoría</label>
+            <select id="pCategoria">
+                <option value="navidad">Navidad</option>
+                <option value="tejido">Tejido</option>
+                <option value="hogar">Hogar</option>
+                <option value="niños">Niños</option>
+                <option value="mujer">Mujer</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Producto agotado</label>
+            <input type="checkbox" id="pAgotado">
+        </div>
+
+        <div class="form-group">
+            <label>Imagen</label>
+            <input type="file" id="pImagen" accept="image/*">
+        </div>
+
+        <div class="image-preview" id="previewImagen"></div>
+
+        <button class="btn-save" onclick="guardarProducto()">Guardar</button>
     </div>
+</div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, orderBy, query } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+<!-- SUPABASE -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyB8Ys9IRyZIGz0mTukChadzTrH5hT5L2Ew",
-            authDomain: "elrincondelatati-5cb0d.firebaseapp.com",
-            projectId: "elrincondelatati-5cb0d",
-            storageBucket: "elrincondelatati-5cb0d.firebasestorage.app",
-            messagingSenderId: "817458607803",
-            appId: "1:817458607803:web:8031e8002c9b1f6433db9e",
-            measurementId: "G-S7VN7R5G94"
-        };
+<!-- JS se envía en la PARTE 2 -->
+<script>
+// ------------------ CONFIGURACIÓN SUPABASE ------------------
+  const SUPABASE_URL = 'https://wazkoegfeuttutfoqfjt.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndhemtvZWdmZXV0dHV0Zm9xZmp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzOTExNDUsImV4cCI6MjA3OTk2NzE0NX0.9DUTvS_tekHNPFZHCA_6XHIfQ9ize40xXKP54XZf84k';
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+  const { createClient } = supabase;
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let currentUser = null;
-        let editandoId = null;
-        let imagenSeleccionada = null;
+  // Nombre del bucket de imágenes en Supabase Storage
+  // 👉 Si tu bucket tiene otro nombre, cámbialo aquí:
+  const SUPABASE_BUCKET = 'productos';
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                mostrarPanelAdmin();
-                cargarProductos();
-            } else {
-                currentUser = null;
-                mostrarLogin();
-            }
-        });
+  // ------------------ LOGIN SENCILLO ------------------
+  const ADMIN_PASSWORD = 'tati2025'; // 🔐 Cámbiala si quieres
 
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                mostrarAlerta('loginAlert', 'Iniciando sesión...', 'success');
-            } catch (error) {
-                mostrarAlerta('loginAlert', 'Error: Email o contraseña incorrectos', 'error');
-            }
-        });
+  const loginSection = document.getElementById('loginSection');
+  const adminPanel   = document.getElementById('adminPanel');
 
-        window.cerrarSesion = async () => {
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-            }
-        };
+  function loginAdmin() {
+    const passInput = document.getElementById('adminPass');
+    const valor = passInput.value.trim();
 
-        async function cargarProductos() {
-            const lista = document.getElementById('productosLista');
-            const loading = document.getElementById('loadingProductos');
-            
-            try {
-                loading.classList.remove('hidden');
-                lista.innerHTML = '';
+    if (!valor) {
+      alert('Ingresa la clave de administrador');
+      return;
+    }
 
-                const q = query(collection(db, 'productos'), orderBy('nombre'));
-                const querySnapshot = await getDocs(q);
+    if (valor === ADMIN_PASSWORD) {
+      localStorage.setItem('tati_admin_logged', '1');
+      mostrarAdmin();
+      cargarProductos();
+    } else {
+      alert('Clave incorrecta');
+    }
+  }
 
-                if (querySnapshot.empty) {
-                    lista.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No hay productos aún. ¡Agrega el primero!</p>';
-                } else {
-                    querySnapshot.forEach((doc) => {
-                        const producto = doc.data();
-                        lista.innerHTML += crearCardProducto(doc.id, producto);
-                    });
-                }
-            } catch (error) {
-                console.error('Error al cargar productos:', error);
-                lista.innerHTML = '<p style="text-align: center; color: red; padding: 40px;">Error al cargar productos</p>';
-            } finally {
-                loading.classList.add('hidden');
-            }
+  function logoutAdmin() {
+    localStorage.removeItem('tati_admin_logged');
+    mostrarLogin();
+  }
+
+  function mostrarAdmin() {
+    loginSection.style.display = 'none';
+    adminPanel.style.display   = 'block';
+  }
+
+  function mostrarLogin() {
+    loginSection.style.display = 'block';
+    adminPanel.style.display   = 'none';
+  }
+
+  // Al cargar la página, revisar si ya estaba logueado
+  window.addEventListener('DOMContentLoaded', () => {
+    const logged = localStorage.getItem('tati_admin_logged') === '1';
+    if (logged) {
+      mostrarAdmin();
+      cargarProductos();
+    } else {
+      mostrarLogin();
+    }
+  });
+
+  // Hacemos visibles las funciones que se usan en HTML (onclick)
+  window.loginAdmin  = loginAdmin;
+  window.logoutAdmin = logoutAdmin;
+
+  // ------------------ ESTADO GLOBAL ------------------
+  let productosCache = [];
+  let editandoId = null;
+  let archivoImagenActual = null; // File seleccionado en el input
+  let urlImagenActual = null;     // URL actual en caso de editar
+
+  const productosListaEl = document.getElementById('productosLista');
+  const modalEl          = document.getElementById('productoModal');
+  const modalTituloEl    = document.getElementById('modalTitulo');
+
+  const pNombreEl       = document.getElementById('pNombre');
+  const pPrecioEl       = document.getElementById('pPrecio');
+  const pDescripcionEl  = document.getElementById('pDescripcion');
+  const pCategoriaEl    = document.getElementById('pCategoria');
+  const pAgotadoEl      = document.getElementById('pAgotado');
+  const pImagenInputEl  = document.getElementById('pImagen');
+  const previewImagenEl = document.getElementById('previewImagen');
+
+  // ------------------ CARGAR PRODUCTOS DESDE SUPABASE ------------------
+  async function cargarProductos() {
+    productosListaEl.innerHTML = 'Cargando productos...';
+
+    const { data, error } = await supabaseClient
+      .from('productos')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error al cargar productos:', error);
+      productosListaEl.innerHTML = '<p style="color:red;">Error al cargar productos</p>';
+      return;
+    }
+
+    productosCache = data || [];
+    renderProductos();
+  }
+
+  function renderProductos() {
+    if (!productosCache.length) {
+      productosListaEl.innerHTML = `
+        <p style="text-align:center; padding:30px; color:#555;">
+          Aún no hay productos. Agrega el primero con el botón "Agregar Producto".
+        </p>
+      `;
+      return;
+    }
+
+    productosListaEl.innerHTML = '';
+
+    productosCache.forEach(prod => {
+      const card = document.createElement('div');
+      card.className = 'producto-card' + (prod.agotado ? ' agotado' : '');
+
+      const imagenUrl = prod.imagen_url || 'https://via.placeholder.com/300x200?text=Sin+imagen';
+
+      // Etiqueta AGOTADO si corresponde
+      if (prod.agotado) {
+        const badge = document.createElement('div');
+        badge.className = 'agotado-label';
+        badge.textContent = 'AGOTADO';
+        card.appendChild(badge);
+      }
+
+      const img = document.createElement('img');
+      img.src = imagenUrl;
+      img.alt = prod.nombre || 'Producto';
+      img.onerror = () => {
+        img.src = 'https://via.placeholder.com/300x200?text=Sin+imagen';
+      };
+      card.appendChild(img);
+
+      const title = document.createElement('h3');
+      title.textContent = prod.nombre || 'Sin nombre';
+      card.appendChild(title);
+
+      const precio = document.createElement('p');
+      precio.style.color = '#B71C1C';
+      precio.style.fontWeight = '700';
+      precio.textContent = `$${formatearPrecio(prod.precio || 0)} CLP`;
+      card.appendChild(precio);
+
+      const categoria = document.createElement('p');
+      categoria.style.fontSize = '0.9em';
+      categoria.style.color = '#7a5a3a';
+      categoria.textContent = `Categoría: ${prod.categoria || 'sin categoría'}`;
+      card.appendChild(categoria);
+
+      const desc = document.createElement('p');
+      desc.style.fontSize = '0.9em';
+      desc.style.color = '#555';
+      desc.textContent = prod.descripcion || 'Sin descripción';
+      card.appendChild(desc);
+
+      const actions = document.createElement('div');
+      actions.className = 'producto-actions';
+
+      const btnEdit = document.createElement('button');
+      btnEdit.className = 'btn-edit';
+      btnEdit.textContent = '✏️ Editar';
+      btnEdit.onclick = () => editarProducto(prod.id);
+      actions.appendChild(btnEdit);
+
+      const btnDelete = document.createElement('button');
+      btnDelete.className = 'btn-delete';
+      btnDelete.textContent = '🗑️ Eliminar';
+      btnDelete.onclick = () => eliminarProducto(prod.id, prod.nombre);
+      actions.appendChild(btnDelete);
+
+      card.appendChild(actions);
+
+      productosListaEl.appendChild(card);
+    });
+  }
+
+  function formatearPrecio(num) {
+    const n = Number(num) || 0;
+    return n.toLocaleString('es-CL');
+  }
+
+  // ------------------ MODAL: ABRIR / CERRAR ------------------
+  function abrirModalAgregar() {
+    editandoId = null;
+    archivoImagenActual = null;
+    urlImagenActual = null;
+
+    modalTituloEl.textContent = 'Agregar Producto';
+
+    pNombreEl.value      = '';
+    pPrecioEl.value      = '';
+    pDescripcionEl.value = '';
+    pCategoriaEl.value   = 'navidad';
+    pAgotadoEl.checked   = false;
+    pImagenInputEl.value = '';
+    previewImagenEl.innerHTML = '';
+
+    modalEl.style.display = 'block';
+  }
+
+  function cerrarModal() {
+    modalEl.style.display = 'none';
+    editandoId = null;
+    archivoImagenActual = null;
+    urlImagenActual = null;
+    pImagenInputEl.value = '';
+    previewImagenEl.innerHTML = '';
+  }
+
+  window.abrirModalAgregar = abrirModalAgregar;
+  window.cerrarModal       = cerrarModal;
+
+  // Cerrar modal si clickea fuera del contenido
+  window.addEventListener('click', (e) => {
+    if (e.target === modalEl) {
+      cerrarModal();
+    }
+  });
+
+  // ------------------ EDITAR PRODUCTO ------------------
+  async function editarProducto(id) {
+    const prod = productosCache.find(p => String(p.id) === String(id));
+    if (!prod) {
+      alert('No se encontró el producto');
+      return;
+    }
+
+    editandoId = prod.id;
+    modalTituloEl.textContent = 'Editar Producto';
+
+    pNombreEl.value      = prod.nombre || '';
+    pPrecioEl.value      = prod.precio || '';
+    pDescripcionEl.value = prod.descripcion || '';
+    pCategoriaEl.value   = prod.categoria || 'navidad';
+    pAgotadoEl.checked   = !!prod.agotado;
+
+    urlImagenActual = prod.imagen_url || null;
+    archivoImagenActual = null;
+    pImagenInputEl.value = '';
+
+    if (urlImagenActual) {
+      previewImagenEl.innerHTML = `<img src="${urlImagenActual}" alt="Imagen producto">`;
+    } else {
+      previewImagenEl.innerHTML = '';
+    }
+
+    modalEl.style.display = 'block';
+  }
+
+  window.editarProducto = editarProducto;
+
+  // ------------------ ELIMINAR PRODUCTO ------------------
+  async function eliminarProducto(id, nombre) {
+    const seguro = confirm(`¿Eliminar el producto "${nombre}"?`);
+    if (!seguro) return;
+
+    const { error } = await supabaseClient
+      .from('productos')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error al eliminar:', error);
+      alert('Error al eliminar el producto');
+      return;
+    }
+
+    // Actualizar listado
+    productosCache = productosCache.filter(p => p.id !== id);
+    renderProductos();
+  }
+
+  window.eliminarProducto = eliminarProducto;
+
+  // ------------------ SUBIR IMAGEN A SUPABASE STORAGE ------------------
+  async function subirImagenASupabase(file) {
+    const ext = file.name.split('.').pop();
+    const nombreLimpio = file.name.replace(/\s+/g, '_').toLowerCase();
+    const fileName = `${Date.now()}_${nombreLimpio}`;
+    const filePath = `productos/${fileName}`;
+
+    const { data, error } = await supabaseClient
+      .storage
+      .from(SUPABASE_BUCKET)
+      .upload(filePath, file);
+
+    if (error) {
+      console.error('Error subiendo imagen:', error);
+      throw error;
+    }
+
+    const { data: publicData } = supabaseClient
+      .storage
+      .from(SUPABASE_BUCKET)
+      .getPublicUrl(filePath);
+
+    return publicData.publicUrl;
+  }
+
+  // ------------------ INPUT IMAGEN: PREVIEW ------------------
+  pImagenInputEl.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    archivoImagenActual = null;
+
+    if (!file) {
+      previewImagenEl.innerHTML = '';
+      return;
+    }
+
+    archivoImagenActual = file;
+    urlImagenActual = null; // si sube archivo nuevo, olvidamos la URL anterior
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      previewImagenEl.innerHTML = `<img src="${ev.target.result}" alt="Preview">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ------------------ GUARDAR (AGREGAR / EDITAR) ------------------
+  async function guardarProducto() {
+    const nombre      = pNombreEl.value.trim();
+    const precio      = Number(pPrecioEl.value) || 0;
+    const descripcion = pDescripcionEl.value.trim();
+    const categoria   = pCategoriaEl.value;
+    const agotado     = pAgotadoEl.checked;
+
+    if (!nombre || precio <= 0) {
+      alert('Nombre y precio deben ser válidos');
+      return;
+    }
+
+    let imagenFinalUrl = urlImagenActual || '';
+
+    try {
+      // Si seleccionó un archivo nuevo, lo subimos
+      if (archivoImagenActual) {
+        imagenFinalUrl = await subirImagenASupabase(archivoImagenActual);
+      }
+
+      if (!imagenFinalUrl) {
+        // Si quieres obligar imagen, descomenta esta validación:
+        // alert('Debes seleccionar una imagen');
+        // return;
+      }
+
+      const dataProducto = {
+        nombre,
+        precio,
+        descripcion,
+        categoria,
+        imagen_url: imagenFinalUrl,
+        agotado
+      };
+
+      if (!editandoId) {
+        // INSERTAR
+        const { data, error } = await supabaseClient
+          .from('productos')
+          .insert([dataProducto])
+          .select();
+
+        if (error) {
+          console.error('Error al agregar:', error);
+          alert('Error al agregar producto');
+          return;
         }
 
-        function crearCardProducto(id, producto) {
-            const precio = formatearPrecio(producto.precio);
-            return `
-                <div class="producto-card">
-                <img src="${producto.imagen}" alt="${producto.nombre}" onerror="this.src='https://via.placeholder.com/200?text=Sin+Imagen'">
-                <h3>${producto.nombre}</h3>
-                <p class="precio">$${precio}</p>
-                <p class="descripcion">${producto.descripcion || 'Sin descripción'}</p>
-                <div class="producto-actions">
-                    <button class="btn-edit" onclick="editarProducto('${id}')">✏️ Editar</button>
-                    <button class="btn-delete" onclick="eliminarProducto('${id}', '${producto.nombre}')">🗑️ Eliminar</button>
-                </div>
-                </div>
-            `;
+        // Agregar al cache y re-render
+        if (data && data.length > 0) {
+          productosCache.push(data[0]);
+          renderProductos();
+        }
+      } else {
+        // ACTUALIZAR
+        const { error } = await supabaseClient
+          .from('productos')
+          .update(dataProducto)
+          .eq('id', editandoId);
+
+        if (error) {
+          console.error('Error al actualizar:', error);
+          alert('Error al actualizar producto');
+          return;
         }
 
-        function formatearPrecio(numero) {
-            return numero.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
+        // Actualizar cache
+        productosCache = productosCache.map(p =>
+          p.id === editandoId ? { ...p, ...dataProducto } : p
+        );
+        renderProductos();
+      }
 
-        window.abrirModalAgregar = () => {
-            editandoId = null;
-            document.getElementById('modalTitulo').textContent = 'Agregar Producto';
-            document.getElementById('productoForm').reset();
-            document.getElementById('imagePreview').innerHTML = '';
-            document.getElementById('modalAlert').innerHTML = '';
-            imagenSeleccionada = null;
-            document.querySelector('.file-name')?.remove();
-            document.getElementById('productoModal').style.display = 'block';
-        };
+      cerrarModal();
+    } catch (err) {
+      console.error('Error guardando producto:', err);
+      alert('Error al guardar producto');
+    }
+  }
 
-        window.editarProducto = async (id) => {
-            editandoId = id;
-            document.getElementById('modalTitulo').textContent = 'Editar Producto';
-            document.getElementById('modalAlert').innerHTML = '';
-            
-            // Limpiar campos de imagen
-            document.getElementById('productoImagenFile').value = '';
-            document.querySelector('.file-name')?.remove();
-            imagenSeleccionada = null;
-            
-            try {
-                const docSnap = await getDocs(collection(db, 'productos'));
-                
-                let productoData = null;
-                docSnap.forEach((doc) => {
-                    if (doc.id === id) {
-                        productoData = doc.data();
-                    }
-                });
+  window.guardarProducto = guardarProducto;
+</script>
 
-                if (productoData) {
-                    document.getElementById('productoNombre').value = productoData.nombre;
-                    document.getElementById('productoPrecio').value = productoData.precio;
-                    document.getElementById('productoDescripcion').value = productoData.descripcion || '';
-                    
-                    // Si la imagen es una URL (no base64)
-                    if (productoData.imagen && productoData.imagen.startsWith('http')) {
-                        document.getElementById('productoImagenUrl').value = productoData.imagen;
-                        document.getElementById('imagePreview').innerHTML = `<img src="${productoData.imagen}" alt="Preview">`;
-                    } else if (productoData.imagen) {
-                        // Si es base64, mostrar preview pero no en campos editables
-                        document.getElementById('imagePreview').innerHTML = `<img src="${productoData.imagen}" alt="Preview" style="max-width: 100%; border-radius: 8px;">`;
-                        document.getElementById('productoImagenUrl').value = '';
-                    }
-                    
-                    document.getElementById('productoModal').style.display = 'block';
-                }
-            } catch (error) {
-                alert('Error al cargar producto');
-                console.error(error);
-            }
-        };
-
-        window.eliminarProducto = async (id, nombre) => {
-            if (confirm(`¿Estás segura de eliminar "${nombre}"?`)) {
-                try {
-                    await deleteDoc(doc(db, 'productos', id));
-                    mostrarAlerta('modalAlert', 'Producto eliminado correctamente', 'success');
-                    cargarProductos();
-                } catch (error) {
-                    alert('Error al eliminar producto');
-                    console.error(error);
-                }
-            }
-        };
-
-        // Preview de imagen desde archivo
-        document.getElementById('productoImagenFile').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Mostrar nombre del archivo
-                document.querySelector('.file-name')?.remove();
-                const fileName = document.createElement('div');
-                fileName.className = 'file-name';
-                fileName.textContent = `📁 ${file.name}`;
-                this.parentNode.appendChild(fileName);
-                
-                // Crear preview
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('imagePreview');
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 100%; border-radius: 8px;">`;
-                    imagenSeleccionada = e.target.result; // Guardar imagen en base64
-                };
-                reader.readAsDataURL(file);
-                
-                // Limpiar campo de URL
-                document.getElementById('productoImagenUrl').value = '';
-            }
-        });
-
-        // Preview de imagen desde URL (mantener funcionalidad existente)
-        document.getElementById('productoImagenUrl').addEventListener('input', function(e) {
-            const url = e.target.value;
-            const preview = document.getElementById('imagePreview');
-            
-            if (url) {
-                preview.innerHTML = `<img src="${url}" alt="Preview" onerror="this.src='https://via.placeholder.com/200?text=URL+inválida'">`;
-                imagenSeleccionada = null; // Limpiar imagen de archivo
-                // Limpiar input de archivo
-                document.getElementById('productoImagenFile').value = '';
-                document.querySelector('.file-name')?.remove();
-            } else {
-                preview.innerHTML = '';
-            }
-        });
-
-        // Guardar producto (agregar o editar)
-        document.getElementById('productoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const nombre = document.getElementById('productoNombre').value;
-            const precio = parseInt(document.getElementById('productoPrecio').value);
-            const descripcion = document.getElementById('productoDescripcion').value;
-            const imagenUrl = document.getElementById('productoImagenUrl').value;
-
-            let imagenFinal = imagenUrl;
-
-            // Si se seleccionó una imagen desde el celular
-            if (imagenSeleccionada) {
-                imagenFinal = imagenSeleccionada; // Usar la imagen en base64
-            }
-
-            // Validar que haya al menos una imagen
-            if (!imagenFinal && !imagenSeleccionada) {
-                mostrarAlerta('modalAlert', 'Por favor, selecciona una imagen o ingresa una URL', 'error');
-                return;
-            }
-
-            const productoData = {
-                nombre,
-                precio,
-                descripcion,
-                imagen: imagenFinal,
-                fechaActualizacion: new Date().toISOString()
-            };
-
-            try {
-                if (editandoId) {
-                    await updateDoc(doc(db, 'productos', editandoId), productoData);
-                    mostrarAlerta('modalAlert', 'Producto actualizado correctamente', 'success');
-                } else {
-                    await addDoc(collection(db, 'productos'), productoData);
-                    mostrarAlerta('modalAlert', 'Producto agregado correctamente', 'success');
-                }
-                
-                setTimeout(() => {
-                    cerrarModal();
-                    cargarProductos();
-                    // Limpiar imagen seleccionada
-                    imagenSeleccionada = null;
-                    document.getElementById('productoImagenFile').value = '';
-                    document.querySelector('.file-name')?.remove();
-                }, 1500);
-            } catch (error) {
-                mostrarAlerta('modalAlert', 'Error al guardar producto', 'error');
-                console.error(error);
-            }
-        });
-
-        window.cerrarModal = () => {
-            document.getElementById('productoModal').style.display = 'none';
-            document.getElementById('productoForm').reset();
-            document.getElementById('imagePreview').innerHTML = '';
-            imagenSeleccionada = null;
-            document.querySelector('.file-name')?.remove();
-            editandoId = null;
-        };
-
-        function mostrarAlerta(elementId, mensaje, tipo) {
-            const alertClass = tipo === 'error' ? 'alert-error' : 'alert-success';
-            document.getElementById(elementId).innerHTML = `<div class="alert ${alertClass}">${mensaje}</div>`;
-        }
-
-        function mostrarLogin() {
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-        }
-
-        function mostrarPanelAdmin() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('adminPanel').classList.remove('hidden');
-        }
-
-        window.cargarProductos = cargarProductos;
-    </script>
-
-    <!-- Código PWA -->
-    <script>
-        let deferredPrompt;
-        const installBtn = document.createElement('button');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            installBtn.textContent = '📱 Instalar App';
-            installBtn.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                padding: 12px 18px;
-                background: #B22222;
-                color: white;
-                border: none;
-                border-radius: 25px;
-                font-size: 16px;
-                cursor: pointer;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                z-index: 10000;
-            `;
-            
-            installBtn.onclick = async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const result = await deferredPrompt.userChoice;
-                if (result.outcome === 'accepted') {
-                    installBtn.style.display = 'none';
-                }
-                deferredPrompt = null;
-            };
-            
-            document.body.appendChild(installBtn);
-        });
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('Service Worker registrado'))
-                .catch(err => console.log('Error SW:', err));
-        }
-
-        // Detectar iPhone y mostrar ayuda
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-
-        if (isIOS) {
-            const iosHelp = document.createElement('div');
-            iosHelp.innerHTML = `
-                <div style="
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: #007AFF;
-                    color: white;
-                    padding: 15px 20px;
-                    border-radius: 10px;
-                    font-size: 14px;
-                    text-align: center;
-                    z-index: 10001;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    max-width: 90%;
-                ">
-                    <strong>📱 Instalar en iPhone:</strong><br>
-                    Usa Safari → Compartir (📤) → "Agregar a Pantalla de Inicio"
-                    <button onclick="this.parentElement.style.display='none'" style="
-                        background: white;
-                        color: #007AFF;
-                        border: none;
-                        padding: 5px 10px;
-                        border-radius: 5px;
-                        margin-left: 10px;
-                        cursor: pointer;
-                    ">OK</button>
-                </div>
-            `;
-            document.body.appendChild(iosHelp);
-        }
-    </script>
 </body>
 </html>
