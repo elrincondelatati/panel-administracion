@@ -1,429 +1,864 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Administrador de Productos</title>
+  <meta charset="UTF-8" />
+  <title>Administrador de Productos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --fondo: #ffe9d7;
+      --fondo-tarjeta: #fff6ee;
+      --primario: #d0382a;
+      --primario-oscuro: #a2231c;
+      --azul-boton: #2187d9;
+      --azul-boton-hover: #1965a3;
+      --borde-tarjeta: #f0b26b;
+      --texto: #5a2520;
+      --gris-suave: #f5f5f7;
+      --amarillo-liquidacion: #ffe066;
+    }
 
-    <!-- GOOGLE FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    * {
+      box-sizing: border-box;
+    }
 
-    <style>
-        body {
-            font-family: "Poppins", sans-serif;
-            background: #fbeee6;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #ffe1c0 0, #ffe9d7 35%, #ffe9d7 100%);
+      color: var(--texto);
+    }
 
-        .container {
-            width: 90%;
-            max-width: 1100px;
-            margin: auto;
-        }
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 12px 32px;
+    }
 
-        .titulo {
-            text-align: center;
-            font-size: 32px;
-            font-weight: bold;
-            color: #922b21;
-            padding: 20px 0;
-        }
+    h1 {
+      text-align: center;
+      color: var(--primario);
+      font-size: 32px;
+      margin: 10px 0 26px;
+      letter-spacing: 0.02em;
+    }
 
-        .boton-agregar {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+    .barra-superior {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
 
-        button {
-            cursor: pointer;
-        }
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease,
+        background-color 0.12s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
 
-        .boton {
-            background-color: #3498db;
-            color: white;
-            padding: 12px 22px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-        }
+    .btn-primario {
+      background-color: var(--azul-boton);
+      color: #ffffff;
+    }
 
-        /* TARJETAS */
-        .lista-productos {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
-        }
+    .btn-primario:hover {
+      background-color: var(--azul-boton-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+    }
 
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
+    .btn-icono {
+      font-size: 18px;
+      line-height: 1;
+    }
 
-        .card img {
-            width: 100%;
-            height: 260px;
-            object-fit: cover;
-            border-radius: 14px;
-        }
+    .grid-productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+    }
 
-        .nombre {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+    .tarjeta {
+      background: var(--fondo-tarjeta);
+      border-radius: 24px;
+      padding: 14px 14px 18px;
+      border: 2px solid var(--borde-tarjeta);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
 
-        .precio {
-            color: #c0392b;
-            font-size: 22px;
-            font-weight: bold;
-        }
+    .estado-badges {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      min-height: 24px;
+    }
 
-        .categoria-tag {
-            background: #f7dc6f;
-            padding: 5px 12px;
-            border-radius: 10px;
-            display: inline-block;
-            font-weight: bold;
-        }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-        /* ETIQUETAS AGOTADO / LIQUIDACIÓN */
-        .etiqueta-agotado {
-            position: absolute;
-            top: 15px;
-            left: -10px;
-            background: red;
-            color: white;
-            padding: 12px 20px;
-            font-size: 18px;
-            font-weight: bold;
-            transform: rotate(-15deg);
-            border-radius: 8px;
-        }
+    .badge-agotado {
+      background: #ff4b4b;
+      color: #ffffff;
+    }
 
-        .etiqueta-liquidacion {
-            position: absolute;
-            top: 15px;
-            left: -10px;
-            background: yellow;
-            color: red;
-            padding: 12px 20px;
-            font-size: 18px;
-            font-weight: bold;
-            transform: rotate(-15deg);
-            border-radius: 8px;
-        }
+    .badge-liquidacion {
+      background: #ffe066;
+      color: #c01717;
+      border: 1px solid #f1c34a;
+    }
 
-        /* MODAL */
-        #modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.45);
-            justify-content: center;
-            align-items: center;
-        }
+    .imagen-contenedor {
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff0df;
+      margin-bottom: 12px;
+    }
 
-        #modal-contenido {
-            background: white;
-            padding: 25px;
-            width: 90%;
-            max-width: 450px;
-            border-radius: 14px;
-        }
+    .producto-img {
+      width: 100%;
+      height: 230px; /* cuadrado/apaisado uniforme */
+      object-fit: cover;
+      display: block;
+    }
 
-        .input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 6px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-family: inherit;
-        }
+    .tarjeta-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-        .checkbox-area {
-            margin-top: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+    .tarjeta-titulo {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--primario-oscuro);
+    }
 
-        .msg-opcion {
-            font-weight: bold;
-            display: none;
-        }
+    .tarjeta-precio {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--primario);
+      margin: 2px 0;
+    }
 
-        .msg-agotado {
-            color: #b30000;
-        }
+    .tarjeta-categoria {
+      font-size: 13px;
+      color: #8c4c38;
+      margin-bottom: 4px;
+    }
 
-        .msg-liquidacion {
-            background: yellow;
-            color: red;
-            padding: 5px 10px;
-            border-radius: 6px;
-        }
-    </style>
+    .tarjeta-descripcion {
+      font-size: 13px;
+      color: #6a3d30;
+      margin: 0;
+    }
+
+    .texto-estado {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .texto-estado-agotado {
+      color: #c1272d;
+    }
+
+    .texto-estado-liquidacion {
+      background: var(--amarillo-liquidacion);
+      color: #c01717;
+      padding: 6px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .tarjeta-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-editar {
+      flex: 1;
+      background: #ffae34;
+      color: #542100;
+    }
+
+    .btn-editar:hover {
+      background: #f99706;
+    }
+
+    .btn-eliminar {
+      flex: 1;
+      background: #f25b57;
+      color: white;
+    }
+
+    .btn-eliminar:hover {
+      background: #d54542;
+    }
+
+    /* Modal */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .overlay.activo {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 20px;
+      max-width: 480px;
+      width: 92%;
+      padding: 20px 22px 22px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .modal-titulo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primario-oscuro);
+    }
+
+    .modal-cerrar {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .form-grupo {
+      margin-bottom: 10px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--texto);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #d0c4ba;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      background: var(--gris-suave);
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--azul-boton);
+      box-shadow: 0 0 0 1px rgba(33, 135, 217, 0.15);
+      background: #ffffff;
+    }
+
+    .form-textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .estado-row {
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .estado-opciones {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 4px;
+    }
+
+    .estado-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .estado-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primario);
+    }
+
+    .estado-mensaje {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .estado-mensaje-agotado {
+      color: #c1272d;
+      font-weight: 600;
+    }
+
+    .estado-mensaje-liquidacion {
+      background: var(--amarillo-liquidacion);
+      color: #c01717;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .preview-img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-top: 6px;
+      border: 1px dashed #e0c4aa;
+      background: #fff8f0;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-secundario {
+      flex: 1;
+      background: #e3ded8;
+      color: #54382c;
+    }
+
+    .btn-secundario:hover {
+      background: #d2cbc3;
+    }
+
+    .btn-guardar {
+      flex: 1.2;
+      background: var(--primario);
+      color: white;
+    }
+
+    .btn-guardar:hover {
+      background: var(--primario-oscuro);
+    }
+
+    .mensaje-vacio {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 15px;
+      color: #8b5a48;
+    }
+
+    @media (max-width: 600px) {
+      .tarjeta {
+        padding: 12px 12px 16px;
+      }
+      .producto-img {
+        height: 210px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="app">
+    <h1>Administrador de Productos</h1>
 
-    <div class="container">
-        <h1 class="titulo">Administrador de Productos</h1>
-
-        <div class="boton-agregar">
-            <button class="boton" onclick="abrirModal()">➕ Agregar Producto</button>
-        </div>
-
-        <div id="lista-productos" class="lista-productos"></div>
+    <div class="barra-superior">
+      <button id="btn-abrir-modal" class="btn btn-primario">
+        <span class="btn-icono">➕</span>
+        Agregar Producto
+      </button>
     </div>
 
-    <!-- MODAL -->
-    <div id="modal">
-        <div id="modal-contenido">
+    <div id="lista-productos" class="grid-productos"></div>
+    <p id="mensaje-vacio" class="mensaje-vacio" style="display:none;">
+      Aún no hay productos cargados. Haz clic en <strong>“Agregar Producto”</strong> para crear el primero 🤗
+    </p>
+  </div>
 
-            <h2 id="titulo-modal">Nuevo Producto</h2>
+  <!-- MODAL -->
+  <div id="overlay" class="overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-titulo" class="modal-titulo">Nuevo producto</h2>
+        <button class="modal-cerrar" id="btn-cerrar-modal">&times;</button>
+      </div>
 
-            <label>Nombre:</label>
-            <input type="text" id="nombre" class="input">
-
-            <label>Precio:</label>
-            <input type="number" id="precio" class="input">
-
-            <label>Descripción:</label>
-            <textarea id="descripcion" class="input"></textarea>
-
-            <label>Categoría:</label>
-            <select id="categoria" class="input">
-                <option value="navidad">🎄 Navidad</option>
-                <option value="tejido">🧶 Tejido</option>
-                <option value="hogar">🏡 Hogar</option>
-                <option value="niños">👶 Niños</option>
-                <option value="mujer">👗 Mujer</option>
-            </select>
-
-            <label>Opciones del producto:</label>
-            <div class="checkbox-area">
-
-                <div>
-                    <input type="checkbox" id="agotado">
-                    <span id="msg-agotado" class="msg-opcion msg-agotado">Producto agotado ❌</span>
-                </div>
-
-                <div>
-                    <input type="checkbox" id="liquidacion">
-                    <span id="msg-liquidacion" class="msg-opcion msg-liquidacion">Producto en liquidación 🔥</span>
-                </div>
-
-            </div>
-
-            <label>Imagen:</label>
-            <input type="file" id="imagen" accept="image/*" onchange="mostrarPreview()">
-            <img id="preview" style="width:100%; border-radius:10px; margin-top:10px; display:none;">
-
-            <button class="boton" onclick="guardarProducto()">Guardar</button>
-            <button class="boton" style="background:#b03a2e;" onclick="cerrarModal()">Cerrar</button>
+      <div class="modal-body">
+        <div class="form-grupo">
+          <label class="form-label" for="nombre">Nombre</label>
+          <input type="text" id="nombre" class="form-input" />
         </div>
+
+        <div class="form-grupo">
+          <label class="form-label" for="precio">Precio (solo número, sin puntos)</label>
+          <input type="number" id="precio" class="form-input" min="0" />
+        </div>
+
+        <div class="form-grupo">
+          <label class="form-label" for="categoria">Categoría</label>
+          <select id="categoria" class="form-select">
+            <option value="">Selecciona una categoría</option>
+            <option value="navidad">🎄 Navidad</option>
+            <option value="tejido">🧵 Tejido</option>
+            <option value="hogar">🏡 Hogar</option>
+            <option value="niños">👶 Niños</option>
+            <option value="mujer">👗 Mujer</option>
+          </select>
+        </div>
+
+        <div class="form-grupo">
+          <label class="form-label" for="descripcion">Descripción</label>
+          <textarea id="descripcion" class="form-textarea"></textarea>
+        </div>
+
+        <div class="estado-row">
+          <span class="form-label">Estado del producto</span>
+          <div class="estado-opciones">
+            <label class="estado-item">
+              <input type="checkbox" id="agotado" />
+              <span>Producto agotado</span>
+            </label>
+            <label class="estado-item">
+              <input type="checkbox" id="liquidacion" />
+              <span>Producto en liquidación</span>
+            </label>
+          </div>
+          <p id="estado-mensaje" class="estado-mensaje"></p>
+        </div>
+
+        <div class="form-grupo">
+          <label class="form-label" for="imagen">Imagen del producto</label>
+          <input type="file" id="imagen" class="form-input" accept="image/*" />
+          <img id="preview-img" class="preview-img" alt="" style="display:none;" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secundario" id="btn-cancelar">Cancelar</button>
+        <button class="btn btn-guardar" id="btn-guardar">Guardar</button>
+      </div>
     </div>
+  </div>
 
-    <!-- SUPABASE JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    <script>
-        const supabaseUrl = "https://wazkoegfeuttutfoqfjt.supabase.co";
-        const supabaseKey = "TU_KEY_AQUI";
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    // 🔐 Reemplaza estos valores por los tuyos
+    const SUPABASE_URL = "TU_SUPABASE_URL_AQUI";
+    const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY_AQUI";
 
-        let editandoID = null;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // MOSTRAR PREVIEW DE IMAGEN
-        function mostrarPreview() {
-            const file = document.getElementById("imagen").files[0];
-            const preview = document.getElementById("preview");
+    // Elementos del DOM
+    const listaProductosEl = document.getElementById("lista-productos");
+    const mensajeVacioEl = document.getElementById("mensaje-vacio");
 
-            if (file) {
-                preview.src = URL.createObjectURL(file);
-                preview.style.display = "block";
+    const overlay = document.getElementById("overlay");
+    const btnAbrirModal = document.getElementById("btn-abrir-modal");
+    const btnCerrarModal = document.getElementById("btn-cerrar-modal");
+    const btnCancelar = document.getElementById("btn-cancelar");
+    const btnGuardar = document.getElementById("btn-guardar");
+    const modalTitulo = document.getElementById("modal-titulo");
+
+    const inputNombre = document.getElementById("nombre");
+    const inputPrecio = document.getElementById("precio");
+    const inputCategoria = document.getElementById("categoria");
+    const inputDescripcion = document.getElementById("descripcion");
+    const chkAgotado = document.getElementById("agotado");
+    const chkLiquidacion = document.getElementById("liquidacion");
+    const estadoMensaje = document.getElementById("estado-mensaje");
+    const inputImagen = document.getElementById("imagen");
+    const previewImg = document.getElementById("preview-img");
+
+    let productoEditando = null;
+    let urlImagenActual = null;
+
+    // ---------- ESTADO: MENSAJES EN EL FORMULARIO ----------
+    function actualizarMensajeEstado() {
+      estadoMensaje.textContent = "";
+      estadoMensaje.className = "estado-mensaje"; // reset
+
+      if (chkAgotado.checked && chkLiquidacion.checked) {
+        estadoMensaje.textContent =
+          "Marcaste AGOTADO y LIQUIDACIÓN al mismo tiempo. Revisa si esto tiene sentido 😊";
+      } else if (chkAgotado.checked) {
+        estadoMensaje.textContent = "Este producto está agotado 😢";
+        estadoMensaje.classList.add("estado-mensaje-agotado");
+      } else if (chkLiquidacion.checked) {
+        estadoMensaje.textContent = "Producto en liquidación 🔥";
+        estadoMensaje.classList.add("estado-mensaje-liquidacion");
+      }
+    }
+
+    chkAgotado.addEventListener("change", actualizarMensajeEstado);
+    chkLiquidacion.addEventListener("change", actualizarMensajeEstado);
+
+    // ---------- MODAL ----------
+    function abrirModal(nuevo = true, producto = null) {
+      overlay.classList.add("activo");
+      if (nuevo) {
+        modalTitulo.textContent = "Nuevo producto";
+        productoEditando = null;
+        urlImagenActual = null;
+        inputNombre.value = "";
+        inputPrecio.value = "";
+        inputCategoria.value = "";
+        inputDescripcion.value = "";
+        chkAgotado.checked = false;
+        chkLiquidacion.checked = false;
+        actualizarMensajeEstado();
+        inputImagen.value = "";
+        previewImg.style.display = "none";
+        previewImg.src = "";
+      } else if (producto) {
+        modalTitulo.textContent = "Editar producto";
+        productoEditando = producto;
+        urlImagenActual = producto.imagen_url || null;
+
+        inputNombre.value = producto.nombre || "";
+        inputPrecio.value = producto.precio ?? "";
+        inputCategoria.value = producto.categoria || "";
+        inputDescripcion.value = producto.descripcion || "";
+        chkAgotado.checked = !!producto.agotado;
+        chkLiquidacion.checked = !!producto.liquidacion;
+        actualizarMensajeEstado();
+
+        inputImagen.value = "";
+        if (producto.imagen_url) {
+          previewImg.src = producto.imagen_url;
+          previewImg.style.display = "block";
+        } else {
+          previewImg.style.display = "none";
+        }
+      }
+    }
+
+    function cerrarModal() {
+      overlay.classList.remove("activo");
+    }
+
+    btnAbrirModal.addEventListener("click", () => abrirModal(true));
+    btnCerrarModal.addEventListener("click", cerrarModal);
+    btnCancelar.addEventListener("click", cerrarModal);
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) cerrarModal();
+    });
+
+    // Preview de imagen
+    inputImagen.addEventListener("change", () => {
+      const file = inputImagen.files?.[0];
+      if (!file) {
+        previewImg.style.display = "none";
+        previewImg.src = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        previewImg.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // ---------- SUPABASE: CARGAR PRODUCTOS ----------
+    async function cargarProductos() {
+      try {
+        const { data, error } = await supabase
+          .from("productos")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Error al cargar productos:", error);
+          alert("Ocurrió un problema al cargar los productos.");
+          return;
+        }
+
+        renderProductos(data || []);
+      } catch (err) {
+        console.error("Error inesperado al cargar productos:", err);
+        alert("Ocurrió un error inesperado al cargar los productos.");
+      }
+    }
+
+    function formatearPrecioCLP(valor) {
+      if (valor == null || valor === "") return "";
+      const numero = Number(valor);
+      if (Number.isNaN(numero)) return "";
+      return numero.toLocaleString("es-CL");
+    }
+
+    function renderProductos(productos) {
+      listaProductosEl.innerHTML = "";
+
+      if (!productos.length) {
+        mensajeVacioEl.style.display = "block";
+        return;
+      } else {
+        mensajeVacioEl.style.display = "none";
+      }
+
+      for (const p of productos) {
+        const div = document.createElement("div");
+        div.className = "tarjeta";
+
+        const imagenUrl =
+          p.imagen_url ||
+          "https://via.placeholder.com/600x600.png?text=Sin+imagen";
+
+        div.innerHTML = `
+          <div class="estado-badges">
+            ${
+              p.agotado
+                ? `<span class="badge badge-agotado">AGOTADO</span>`
+                : ""
             }
-        }
-
-        // ABRIR MODAL
-        function abrirModal() {
-            editandoID = null;
-            document.getElementById("titulo-modal").innerText = "Nuevo Producto";
-            document.getElementById("modal").style.display = "flex";
-            limpiarFormulario();
-        }
-
-        // CERRAR MODAL
-        function cerrarModal() {
-            document.getElementById("modal").style.display = "none";
-        }
-
-        // LIMPIAR CAMPOS
-        function limpiarFormulario() {
-            document.getElementById("nombre").value = "";
-            document.getElementById("precio").value = "";
-            document.getElementById("descripcion").value = "";
-            document.getElementById("categoria").value = "navidad";
-            document.getElementById("agotado").checked = false;
-            document.getElementById("liquidacion").checked = false;
-
-            document.getElementById("msg-agotado").style.display = "none";
-            document.getElementById("msg-liquidacion").style.display = "none";
-
-            document.getElementById("imagen").value = "";
-            document.getElementById("preview").style.display = "none";
-        }
-
-        // GUARDAR PRODUCTO
-        async function guardarProducto() {
-
-            const nombre = document.getElementById("nombre").value;
-            const precio = document.getElementById("precio").value;
-            const descripcion = document.getElementById("descripcion").value;
-            const categoria = document.getElementById("categoria").value;
-            const agotado = document.getElementById("agotado").checked;
-            const liquidacion = document.getElementById("liquidacion").checked;
-
-            let imagen_url = null;
-
-            const imagenFile = document.getElementById("imagen").files[0];
-
-            if (imagenFile) {
-                const fileName = Date.now() + "_" + imagenFile.name;
-
-                let { data, error } = await supabase.storage
-                    .from("productos")
-                    .upload(fileName, imagenFile);
-
-                if (error) {
-                    alert("Error al subir imagen");
-                    return;
-                }
-
-                imagen_url = `https://wazkoegfeuttutfoqfjt.supabase.co/storage/v1/object/public/productos/${fileName}`;
+            ${
+              p.liquidacion
+                ? `<span class="badge badge-liquidacion">LIQUIDACIÓN</span>`
+                : ""
             }
+          </div>
 
-            const productoData = {
-                nombre,
-                precio,
-                descripcion,
-                categoria,
-                agotado,
-                liquidacion,
-                imagen_url
-            };
+          <div class="imagen-contenedor">
+            <img class="producto-img" src="${imagenUrl}" alt="${p.nombre || ""}" />
+          </div>
 
-            let resultado;
-
-            if (editandoID) {
-                resultado = await supabase
-                    .from("productos")
-                    .update(productoData)
-                    .eq("id", editandoID);
-            } else {
-                resultado = await supabase
-                    .from("productos")
-                    .insert([productoData]);
+          <div class="tarjeta-body">
+            <h3 class="tarjeta-titulo">${p.nombre || ""}</h3>
+            <p class="tarjeta-precio">
+              ${p.precio != null ? `$${formatearPrecioCLP(p.precio)} CLP` : ""}
+            </p>
+            <p class="tarjeta-categoria">
+              ${
+                p.categoria
+                  ? `Categoría: ${p.categoria.toString().toLowerCase()}`
+                  : ""
+              }
+            </p>
+            <p class="tarjeta-descripcion">
+              ${p.descripcion ? p.descripcion : ""}
+            </p>
+            ${
+              p.agotado
+                ? `<p class="texto-estado texto-estado-agotado">Este producto está agotado 😢</p>`
+                : ""
             }
-
-            if (resultado.error) {
-                alert("Error al guardar producto");
-                return;
+            ${
+              !p.agotado && p.liquidacion
+                ? `<p class="texto-estado texto-estado-liquidacion">Producto en liquidación 🔥</p>`
+                : ""
             }
+          </div>
 
-            cerrarModal();
-            cargarProductos();
+          <div class="tarjeta-footer">
+            <button class="btn btn-editar">Editar</button>
+            <button class="btn btn-eliminar">Eliminar</button>
+          </div>
+        `;
+
+        const btnEditar = div.querySelector(".btn-editar");
+        const btnEliminar = div.querySelector(".btn-eliminar");
+
+        btnEditar.addEventListener("click", () => abrirModal(false, p));
+        btnEliminar.addEventListener("click", () => eliminarProducto(p));
+
+        listaProductosEl.appendChild(div);
+      }
+    }
+
+    // ---------- SUPABASE: SUBIR IMAGEN ----------
+    async function subirImagenSiEsNecesario() {
+      const file = inputImagen.files?.[0];
+      if (!file) {
+        // No se cambió la imagen
+        return urlImagenActual;
+      }
+
+      const extension = file.name.split(".").pop();
+      const nombreArchivo = `${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2)}.${extension}`;
+
+      const { data, error } = await supabase.storage
+        .from("productos")
+        .upload(nombreArchivo, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) {
+        console.error("Error al subir imagen:", error);
+        alert("No se pudo subir la imagen. Revisa los permisos de Storage.");
+        return null;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from("productos")
+        .getPublicUrl(data.path);
+
+      return publicUrlData.publicUrl;
+    }
+
+    // ---------- GUARDAR (INSERT / UPDATE) ----------
+    btnGuardar.addEventListener("click", async () => {
+      const nombre = inputNombre.value.trim();
+      const precio = inputPrecio.value.trim();
+      const categoria = inputCategoria.value;
+      const descripcion = inputDescripcion.value.trim();
+      const agotado = chkAgotado.checked;
+      const liquidacion = chkLiquidacion.checked;
+
+      if (!nombre) {
+        alert("El nombre es obligatorio.");
+        return;
+      }
+
+      if (!precio) {
+        alert("El precio es obligatorio.");
+        return;
+      }
+
+      const precioNum = Number(precio);
+      if (Number.isNaN(precioNum) || precioNum < 0) {
+        alert("El precio debe ser un número válido.");
+        return;
+      }
+
+      let imagenUrl = await subirImagenSiEsNecesario();
+      if (imagenUrl === null && inputImagen.files?.[0]) {
+        // Hubo error subiendo la imagen
+        return;
+      }
+      if (!imagenUrl && urlImagenActual) {
+        imagenUrl = urlImagenActual;
+      }
+
+      const payload = {
+        nombre,
+        precio: precioNum,
+        categoria,
+        descripcion,
+        agotado,
+        liquidacion,
+        imagen_url: imagenUrl || null,
+      };
+
+      try {
+        if (!productoEditando) {
+          // INSERT
+          const { error } = await supabase.from("productos").insert([payload]);
+          if (error) {
+            console.error("Error al crear producto:", error);
+            alert("No se pudo crear el producto.");
+            return;
+          }
+        } else {
+          // UPDATE
+          const { error } = await supabase
+            .from("productos")
+            .update(payload)
+            .eq("id", productoEditando.id);
+
+          if (error) {
+            console.error("Error al actualizar producto:", error);
+            alert("No se pudo actualizar el producto.");
+            return;
+          }
         }
 
-        // MOSTRAR PRODUCTOS
-        async function cargarProductos() {
-            const { data, error } = await supabase
-                .from("productos")
-                .select("*")
-                .order("id", { ascending: false });
+        cerrarModal();
+        await cargarProductos();
+      } catch (err) {
+        console.error("Error inesperado al guardar:", err);
+        alert("Ocurrió un error inesperado al guardar el producto.");
+      }
+    });
 
-            const cont = document.getElementById("lista-productos");
-            cont.innerHTML = "";
+    // ---------- ELIMINAR ----------
+    async function eliminarProducto(producto) {
+      const confirmar = window.confirm(
+        `¿Seguro que deseas eliminar "${producto.nombre}"?`
+      );
+      if (!confirmar) return;
 
-            data.forEach(prod => {
+      try {
+        const { error } = await supabase
+          .from("productos")
+          .delete()
+          .eq("id", producto.id);
 
-                let etiqueta = "";
-                if (prod.agotado) {
-                    etiqueta = `<div class="etiqueta-agotado">PRODUCTO AGOTADO</div>`;
-                } else if (prod.liquidacion) {
-                    etiqueta = `<div class="etiqueta-liquidacion">EN LIQUIDACIÓN</div>`;
-                }
-
-                cont.innerHTML += `
-                    <div class="card">
-                        ${etiqueta}
-                        <img src="${prod.imagen_url || ""}">
-                        <div class="nombre">${prod.nombre}</div>
-                        <div class="precio">$${prod.precio} CLP</div>
-                        <div class="categoria-tag">${prod.categoria}</div>
-                        <button onclick="editarProducto(${prod.id})" class="boton" style="margin-top:10px;">Editar</button>
-                        <button onclick="eliminarProducto(${prod.id})" class="boton" style="margin-top:10px; background:#c0392b;">Eliminar</button>
-                    </div>
-                `;
-            });
-        }
-
-        // EDITAR PRODUCTO
-        async function editarProducto(id) {
-            editandoID = id;
-
-            const { data } = await supabase
-                .from("productos")
-                .select("*")
-                .eq("id", id)
-                .single();
-
-            document.getElementById("nombre").value = data.nombre;
-            document.getElementById("precio").value = data.precio;
-            document.getElementById("descripcion").value = data.descripcion;
-            document.getElementById("categoria").value = data.categoria;
-
-            document.getElementById("agotado").checked = data.agotado;
-            document.getElementById("liquidacion").checked = data.liquidacion;
-
-            document.getElementById("msg-agotado").style.display = data.agotado ? "inline-block" : "none";
-            document.getElementById("msg-liquidacion").style.display = data.liquidacion ? "inline-block" : "none";
-
-            if (data.imagen_url) {
-                const preview = document.getElementById("preview");
-                preview.src = data.imagen_url;
-                preview.style.display = "block";
-            }
-
-            document.getElementById("modal").style.display = "flex";
-        }
-
-        // ELIMINAR
-        async function eliminarProducto(id) {
-            if (!confirm("¿Eliminar producto?")) return;
-
-            await supabase.from("productos").delete().eq("id", id);
-            cargarProductos();
+        if (error) {
+          console.error("Error al eliminar producto:", error);
+          alert("No se pudo eliminar el producto.");
+          return;
         }
 
         cargarProductos();
-    </script>
+      } catch (err) {
+        console.error("Error inesperado al eliminar:", err);
+        alert("Ocurrió un error al eliminar el producto.");
+      }
+    }
 
+    // ---------- INICIO ----------
+    cargarProductos();
+  </script>
 </body>
-
 </html>
