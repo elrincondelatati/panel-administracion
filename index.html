@@ -205,6 +205,7 @@
             background: rgba(0,0,0,0.5);
             padding: 40px;
             overflow-y: auto;
+            z-index: 1000; /* 🔥 Z-index corregido */
         }
 
         .modal-content {
@@ -305,8 +306,7 @@
         
         <div class="form-group">
             <label>En liquidación (oferta)</label>
-            <input type="checkbox" id="pLiquidacion">
-        </div>
+            <input type="checkbox" id="pLiquidacion"> </div>
 
         <div class="form-group">
             <label>Imagen</label>
@@ -410,10 +410,10 @@
   async function cargarProductos() {
     productosListaEl.innerHTML = 'Cargando productos...';
 
-    // Se agrega 'liquidacion' a la consulta
+    // Se agrega 'liquidacion' a la consulta (asumiendo que la columna existe en Supabase)
     const { data, error } = await supabaseClient
       .from('productos')
-      .select('*')
+      .select('*, liquidacion')
       .order('created_at', { ascending: true });
 
     if (error) {
