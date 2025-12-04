@@ -1,365 +1,347 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Administrador de Productos</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administrador de Productos</title>
 
-<style>
-    body {
-        font-family: "Poppins", sans-serif;
-        background: #faece2;
-        margin: 0;
-        padding: 0;
-    }
+    <style>
+        body {
+            background-color: #fdeee7;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-    h1 {
-        text-align: center;
-        font-size: 36px;
-        color: #8b2c1f;
-        margin-top: 40px;
-    }
+        h1 {
+            text-align: center;
+            color: #a33625;
+            margin-top: 30px;
+            font-size: 2.5rem;
+        }
 
-    .btn-agregar {
-        display: flex;
-        justify-content: center;
-        margin-top: 25px;
-    }
+        .btn-agregar {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 25px;
+            background-color: #228be6;
+            color: white;
+            font-size: 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
 
-    .btn-agregar button {
-        background: #2386d9;
-        color: white;
-        border: none;
-        padding: 14px 25px;
-        border-radius: 10px;
-        font-size: 18px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+        .contenedor-productos {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
 
-    .producto-card {
-        background: white;
-        width: 350px;
-        border-radius: 22px;
-        padding: 20px;
-        margin: 22px auto;
-        border: 3px solid #f4b77b;
-    }
+        .producto-card {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            border: 2px solid #f5d1b5;
+        }
 
-    .producto-img {
-        width: 100%;
-        height: 330px;
-        object-fit: cover;
-        border-radius: 15px;
-        background: #fff6f0;
-    }
+        .producto-card img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
 
-    .producto-nombre {
-        font-size: 20px;
-        font-weight: bold;
-        margin-top: 15px;
-    }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            font-size: 13px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+        }
 
-    .producto-precio {
-        font-size: 22px;
-        color: #b01818;
-        font-weight: bold;
-    }
+        .agotado {
+            background: red;
+            color: white;
+        }
 
-    .btn-editar, .btn-eliminar {
-        padding: 10px 20px;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        margin-right: 10px;
-        margin-top: 12px;
-    }
+        .liquidacion {
+            background: gold;
+            color: red;
+            font-weight: bold;
+        }
 
-    .btn-editar { background: #ffb734; color: #000; }
-    .btn-eliminar { background: #cf2a2a; color: white; }
+        /* Modal */
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
 
-    /* Modal */
-    #modal {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.3);
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
+        #modal-contenido {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+        }
 
-    #modal-contenido {
-        background: white;
-        width: 90%;
-        max-width: 450px;
-        padding: 25px;
-        border-radius: 16px;
-    }
+        label {
+            font-weight: bold;
+            color: #6a1b1a;
+        }
 
-    label {
-        font-weight: bold;
-        margin-top: 10px;
-        display: block;
-    }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0 15px;
+            border-radius: 8px;
+            border: 1px solid #aaa;
+        }
 
-    input, textarea, select {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border-radius: 10px;
-        border: 1px solid #aaa;
-    }
+        .opciones-estado {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
 
-    .preview-img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        border-radius: 12px;
-        background: #fbf3eb;
-    }
+        .estado-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .checkbox-linea {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-top: 8px;
-    }
+        .estado-msg {
+            margin-top: -10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
 
-    .estado-texto {
-        font-size: 14px;
-        color: #555;
-        font-style: italic;
-        display: block;
-        margin-left: 32px;
-    }
-</style>
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-guardar { background: green; color: white; }
+        .btn-cerrar { background: #a32c2c; color: white; margin-left: 10px; }
+        .btn-editar { background: orange; }
+        .btn-eliminar { background: red; color: white; }
+    </style>
 </head>
-
 <body>
 
-<h1>Administrador de Productos</h1>
+    <h1>Administrador de Productos</h1>
+    <button class="btn-agregar" onclick="abrirModal()">➕ Agregar Producto</button>
 
-<div class="btn-agregar">
-    <button onclick="abrirModalNuevo()">➕ Agregar Producto</button>
-</div>
+    <div class="contenedor-productos" id="lista-productos"></div>
 
-<div id="lista-productos"></div>
+    <!-- MODAL -->
+    <div id="modal">
+        <div id="modal-contenido">
 
-<!-- MODAL -->
-<div id="modal">
-    <div id="modal-contenido">
-        <h2 id="titulo-modal">Nuevo Producto</h2>
+            <h2 id="titulo-modal">Nuevo Producto</h2>
 
-        <label>Nombre:</label>
-        <input type="text" id="nombre">
+            <label>Nombre:</label>
+            <input type="text" id="nombre">
 
-        <label>Precio:</label>
-        <input type="number" id="precio">
+            <label>Precio:</label>
+            <input type="number" id="precio">
 
-        <label>Descripción:</label>
-        <textarea id="descripcion"></textarea>
+            <label>Descripción:</label>
+            <textarea id="descripcion"></textarea>
 
-        <label>Categoría:</label>
-        <select id="categoria">
-            <option value="navidad">🎄 Navidad</option>
-            <option value="tejido">🧶 Tejido</option>
-            <option value="hogar">🏠 Hogar</option>
-            <option value="ninos">👶 Niños</option>
-            <option value="mujer">👗 Mujer</option>
-        </select>
+            <label>Categoría:</label>
+            <select id="categoria">
+                <option value="navidad">Navidad 🎄</option>
+                <option value="tejido">Tejido 🧵</option>
+                <option value="hogar">Hogar 🏡</option>
+                <option value="niños">Niños 👶</option>
+                <option value="mujer">Mujer 👗</option>
+            </select>
 
-        <br><br>
+            <label>Estado del producto:</label>
+            <div class="opciones-estado">
+                <div class="estado-item">
+                    <input type="radio" name="estado" id="estado-normal" checked>
+                    <span>Disponible</span>
+                </div>
+                <div class="estado-item">
+                    <input type="radio" name="estado" id="estado-agotado">
+                    <span>Agotado</span>
+                </div>
+                <div class="estado-item">
+                    <input type="radio" name="estado" id="estado-liquidacion">
+                    <span>Liquidación</span>
+                </div>
+            </div>
 
-        <label>Estado del producto:</label>
+            <div id="estado-msg" class="estado-msg"></div>
 
-        <div class="checkbox-linea">
-            <input type="checkbox" id="agotado" onchange="marcarAgotado()">
-            <span>Producto agotado</span>
+            <label>Imagen:</label>
+            <input type="file" id="imagen" accept="image/*">
+            <img id="preview" style="width:100%; border-radius:10px; display:none;">
+
+            <br><br>
+            <button class="btn btn-guardar" onclick="guardarProducto()">Guardar</button>
+            <button class="btn btn-cerrar" onclick="cerrarModal()">Cerrar</button>
+
         </div>
-        <span id="textoAgotado" class="estado-texto"></span>
-
-        <div class="checkbox-linea">
-            <input type="checkbox" id="liquidacion" onchange="marcarLiquidacion()">
-            <span>Producto en liquidación</span>
-        </div>
-        <span id="textoLiquidacion" class="estado-texto"></span>
-
-        <br><br>
-
-        <label>Imagen:</label>
-        <input type="file" id="imagen" accept="image/*" onchange="mostrarPreview()">
-        <img id="preview" class="preview-img">
-
-        <br><br>
-
-        <button class="btn-editar" onclick="guardarProducto()">Guardar</button>
-        <button class="btn-eliminar" onclick="cerrarModal()">Cerrar</button>
     </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const supabaseUrl = "https://wazkoegfeuttutfoqfjt.supabase.co";
-const supabaseKey = "TU_PUBLIC_KEY_AQUI";
-const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl = "https://wazkoegfeuttutfoqfjt.supabase.co";
+    const supabaseKey = "sb_publishable_PwMGk7yJAN-1q_a_meHcKQ_CuWSSrgF";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-let editandoID = null;
+    let editandoId = null;
 
-async function cargarProductos() {
-    const { data } = await supabase.from("productos").select("*").order("id", { ascending: false });
-
-    const lista = document.getElementById("lista-productos");
-    lista.innerHTML = "";
-
-    data.forEach(prod => {
-        const card = document.createElement("div");
-        card.className = "producto-card";
-
-        let estado = "";
-        if (prod.agotado) estado = "<p style='color:red;font-weight:bold'>Producto agotado</p>";
-        if (prod.liquidacion) estado = "<p style='color:#b06f00;font-weight:bold;background:yellow;padding:5px;border-radius:8px;'>Producto en liquidación</p>";
-
-        card.innerHTML = `
-            <img src="${prod.imagen_url}" class="producto-img">
-            <div class="producto-nombre">${prod.nombre}</div>
-            <div class="producto-precio">$${prod.precio} CLP</div>
-            <p>${prod.descripcion}</p>
-
-            ${estado}
-
-            <button class="btn-editar" onclick='editarProducto(${JSON.stringify(prod)})'>Editar</button>
-            <button class="btn-eliminar" onclick='eliminarProducto(${prod.id})'>Eliminar</button>
-        `;
-
-        lista.appendChild(card);
+    document.getElementById("imagen").addEventListener("change", () => {
+        const file = imagen.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        }
     });
-}
 
-cargarProductos();
+    function abrirModal(id = null) {
+        editandoId = id;
 
-function abrirModalNuevo() {
-    editandoID = null;
+        if (id) {
+            cargarProducto(id);
+            titulo-modal.textContent = "Editar Producto";
+        } else {
+            limpiarFormulario();
+            titulo-modal.textContent = "Nuevo Producto";
+        }
 
-    document.getElementById("titulo-modal").innerText = "Nuevo Producto";
-
-    document.getElementById("nombre").value = "";
-    document.getElementById("precio").value = "";
-    document.getElementById("descripcion").value = "";
-    document.getElementById("categoria").value = "navidad";
-    document.getElementById("agotado").checked = false;
-    document.getElementById("liquidacion").checked = false;
-    document.getElementById("textoAgotado").innerText = "";
-    document.getElementById("textoLiquidacion").innerText = "";
-    document.getElementById("preview").src = "";
-
-    document.getElementById("modal").style.display = "flex";
-}
-
-function cerrarModal() {
-    document.getElementById("modal").style.display = "none";
-}
-
-function marcarAgotado() {
-    if (document.getElementById("agotado").checked) {
-        document.getElementById("liquidacion").checked = false;
-        document.getElementById("textoAgotado").innerText = "Marcado como agotado";
-        document.getElementById("textoLiquidacion").innerText = "";
-    } else {
-        document.getElementById("textoAgotado").innerText = "";
+        modal.style.display = "flex";
     }
-}
 
-function marcarLiquidacion() {
-    if (document.getElementById("liquidacion").checked) {
-        document.getElementById("agotado").checked = false;
-        document.getElementById("textoLiquidacion").innerText = "Marcado como liquidación";
-        document.getElementById("textoAgotado").innerText = "";
-    } else {
-        document.getElementById("textoLiquidacion").innerText = "";
+    function cerrarModal() {
+        modal.style.display = "none";
     }
-}
 
-function mostrarPreview() {
-    const file = document.getElementById("imagen").files[0];
-    if (file) {
-        document.getElementById("preview").src = URL.createObjectURL(file);
+    function limpiarFormulario() {
+        nombre.value = "";
+        precio.value = "";
+        descripcion.value = "";
+        categoria.value = "navidad";
+        estado-normal.checked = true;
+        estado-msg.textContent = "";
+        preview.style.display = "none";
     }
-}
 
-async function guardarProducto() {
-    const nombre = document.getElementById("nombre").value;
-    const precio = document.getElementById("precio").value;
-    const descripcion = document.getElementById("descripcion").value;
-    const categoria = document.getElementById("categoria").value;
-    const agotado = document.getElementById("agotado").checked;
-    const liquidacion = document.getElementById("liquidacion").checked;
+    function estadoSeleccionado() {
+        if (estado-agotado.checked) return "agotado";
+        if (estado-liquidacion.checked) return "liquidacion";
+        return "normal";
+    }
 
-    let urlImagen = null;
+    async function guardarProducto() {
+        const data = {
+            nombre: nombre.value,
+            precio: parseInt(precio.value),
+            descripcion: descripcion.value,
+            categoria: categoria.value,
+            agotado: estado-agotado.checked,
+            liquidacion: estado-liquidacion.checked,
+        };
 
-    const file = document.getElementById("imagen").files[0];
+        let urlImagen = null;
 
-    if (file) {
-        const nombreArchivo = Date.now() + "_" + file.name;
+        if (imagen.files[0]) {
+            const archivo = imagen.files[0];
+            const nombreArchivo = Date.now() + "-" + archivo.name;
 
-        const { error: err1 } = await supabase.storage
-            .from("productos")
-            .upload(nombreArchivo, file);
+            const { data: imgData, error: imgError } = await supabaseClient
+                .storage
+                .from("productos")
+                .upload(nombreArchivo, archivo);
 
-        if (!err1) {
-            urlImagen = `${supabaseUrl}/storage/v1/object/public/productos/${nombreArchivo}`;
+            if (!imgError) {
+                urlImagen = `${supabaseUrl}/storage/v1/object/public/productos/${nombreArchivo}`;
+                data.imagen_url = urlImagen;
+            }
+        }
+
+        if (editandoId) {
+            await supabaseClient.from("productos").update(data).eq("id", editandoId);
+        } else {
+            await supabaseClient.from("productos").insert(data);
+        }
+
+        cerrarModal();
+        cargarProductos();
+    }
+
+    async function cargarProducto(id) {
+        const { data } = await supabaseClient.from("productos").select("*").eq("id", id).single();
+
+        nombre.value = data.nombre;
+        precio.value = data.precio;
+        descripcion.value = data.descripcion;
+        categoria.value = data.categoria;
+
+        if (data.agotado) estado-agotado.checked = true;
+        else if (data.liquidacion) estado-liquidacion.checked = true;
+        else estado-normal.checked = true;
+
+        if (data.imagen_url) {
+            preview.src = data.imagen_url;
+            preview.style.display = "block";
         }
     }
 
-    if (editandoID) {
-        await supabase.from("productos").update({
-            nombre, precio, descripcion, categoria,
-            agotado, liquidacion,
-            ...(urlImagen && { imagen_url: urlImagen })
-        }).eq("id", editandoID);
-    } else {
-        await supabase.from("productos").insert({
-            nombre, precio, descripcion, categoria,
-            agotado, liquidacion,
-            imagen_url: urlImagen
+    async function cargarProductos() {
+        const { data } = await supabaseClient.from("productos").select("*").order("id", { ascending: false });
+
+        lista-productos.innerHTML = "";
+
+        data.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "producto-card";
+
+            let badge = "";
+            if (p.agotado) badge = `<div class="badge agotado">AGOTADO</div>`;
+            if (p.liquidacion) badge = `<div class="badge liquidacion">LIQUIDACIÓN</div>`;
+
+            div.innerHTML = `
+                <img src="${p.imagen_url}">
+                <div style="flex:1">
+                    ${badge}
+                    <h3>${p.nombre}</h3>
+                    <strong>$${p.precio.toLocaleString("es-CL")} CLP</strong>
+                    <p>Categoría: ${p.categoria}</p>
+                    <p>${p.descripcion}</p>
+                    <button onclick="abrirModal(${p.id})" class="btn btn-editar">Editar</button>
+                    <button onclick="eliminarProducto(${p.id})" class="btn btn-eliminar">Eliminar</button>
+                </div>
+            `;
+
+            lista-productos.appendChild(div);
         });
     }
 
-    cerrarModal();
-    cargarProductos();
-}
-
-function editarProducto(prod) {
-    editandoID = prod.id;
-
-    document.getElementById("titulo-modal").innerText = "Editar Producto";
-
-    document.getElementById("nombre").value = prod.nombre;
-    document.getElementById("precio").value = prod.precio;
-    document.getElementById("descripcion").value = prod.descripcion;
-    document.getElementById("categoria").value = prod.categoria;
-
-    document.getElementById("agotado").checked = prod.agotado;
-    document.getElementById("liquidacion").checked = prod.liquidacion;
-
-    document.getElementById("textoAgotado").innerText = prod.agotado ? "Marcado como agotado" : "";
-    document.getElementById("textoLiquidacion").innerText = prod.liquidacion ? "Marcado como liquidación" : "";
-
-    document.getElementById("preview").src = prod.imagen_url;
-
-    document.getElementById("modal").style.display = "flex";
-}
-
-async function eliminarProducto(id) {
-    if (confirm("¿Eliminar producto?")) {
-        await supabase.from("productos").delete().eq("id", id);
+    async function eliminarProducto(id) {
+        await supabaseClient.from("productos").delete().eq("id", id);
         cargarProductos();
     }
-}
+
+    cargarProductos();
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 </body>
 </html>
+
