@@ -127,7 +127,7 @@
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.12);
             transition: 0.3s;
-            position: relative; /* Necesario para posicionar las etiquetas */
+            position: relative; /* Para las etiquetas */
         }
 
         .producto-card:hover {
@@ -143,46 +143,32 @@
             margin-bottom: 10px;
         }
 
+        /* Estilos de etiquetas */
         .agotado-label {
-            display: inline-block;
+            position: absolute;
+            top: 10px;
+            right: 10px;
             background: #d32f2f;
             color: white;
             padding: 5px 10px;
             border-radius: 10px;
             font-weight: bold;
-            margin-bottom: 5px;
-            position: absolute; /* Posicionamiento absoluto */
-            top: 25px;
-            left: 25px;
+            font-size: 14px;
             z-index: 10;
         }
-
-        /* NUEVO ESTILO PARA LIQUIDACIÓN */
+        
         .liquidacion-label {
-            display: inline-block;
-            background: #FFEB3B; /* Amarillo */
-            color: #B71C1C; /* Rojo (Similar al logo/precio) */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FFD700; /* Amarillo/Dorado */
+            color: #d32f2f; /* Rojo */
             padding: 5px 10px;
             border-radius: 10px;
             font-weight: bold;
-            margin-bottom: 5px;
-            position: absolute; /* Posicionamiento absoluto */
-            top: 25px;
-            left: 25px;
+            font-size: 14px;
+            border: 2px solid #d32f2f;
             z-index: 10;
-        }
-
-        /* Si el producto está agotado y en liquidación, movemos la de agotado */
-        .producto-card.agotado .agotado-label {
-            top: 65px; /* Mover abajo para no superponer con liquidación */
-        }
-        .producto-card.liquidacion .agotado-label {
-            top: 65px; /* Asegurar que se mueve si liquidación está */
-        }
-        
-        /* Solo si ambas están presentes, movemos la de agotado. Dejamos el de arriba por si acaso, pero este es más preciso */
-        .producto-card.agotado.liquidacion .agotado-label {
-            top: 65px;
         }
 
         .producto-actions {
@@ -313,13 +299,13 @@
         </div>
 
         <div class="form-group">
-            <label>Producto en Liquidación</label>
-            <input type="checkbox" id="pLiquidacion">
-        </div>
-
-        <div class="form-group">
             <label>Producto agotado</label>
             <input type="checkbox" id="pAgotado">
+        </div>
+        
+        <div class="form-group">
+            <label>En liquidación (oferta)</label>
+            <input type="checkbox" id="pLiquidacion">
         </div>
 
         <div class="form-group">
@@ -416,7 +402,7 @@
   const pDescripcionEl  = document.getElementById('pDescripcion');
   const pCategoriaEl    = document.getElementById('pCategoria');
   const pAgotadoEl      = document.getElementById('pAgotado');
-  const pLiquidacionEl  = document.getElementById('pLiquidacion'); // Nuevo Elemento
+  const pLiquidacionEl  = document.getElementById('pLiquidacion'); // Nuevo elemento
   const pImagenInputEl  = document.getElementById('pImagen');
   const previewImagenEl = document.getElementById('previewImagen');
 
@@ -424,7 +410,7 @@
   async function cargarProductos() {
     productosListaEl.innerHTML = 'Cargando productos...';
 
-    // Asegurarse de que el campo 'liquidacion' se incluye en la consulta
+    // Se agrega 'liquidacion' a la consulta
     const { data, error } = await supabaseClient
       .from('productos')
       .select('*')
@@ -453,33 +439,23 @@
     productosListaEl.innerHTML = '';
 
     productosCache.forEach(prod => {
-      // Agregar clase 'liquidacion' si está en liquidación
       const card = document.createElement('div');
-      let cardClass = 'producto-card';
-      if (prod.agotado) {
-          cardClass += ' agotado';
-      }
-      // Se añade la clase 'liquidacion' si el campo es true
-      if (prod.liquidacion) { 
-          cardClass += ' liquidacion';
-      }
-      card.className = cardClass;
+      card.className = 'producto-card' + (prod.agotado ? ' agotado' : '');
 
       const imagenUrl = prod.imagen_url || 'https://via.placeholder.com/300x200?text=Sin+imagen';
 
-      // Etiqueta LIQUIDACIÓN si corresponde (Nuevo Requisito)
-      if (prod.liquidacion) {
-          const badgeLiq = document.createElement('div');
-          badgeLiq.className = 'liquidacion-label';
-          badgeLiq.textContent = 'LIQUIDACIÓN';
-          card.appendChild(badgeLiq);
-      }
-      
-      // Etiqueta AGOTADO si corresponde
+      // Lógica de etiquetas
       if (prod.agotado) {
+        // Muestra AGOTADO si está agotado
         const badge = document.createElement('div');
         badge.className = 'agotado-label';
         badge.textContent = 'AGOTADO';
+        card.appendChild(badge);
+      } else if (prod.liquidacion) {
+        // Muestra LIQUIDACIÓN si está en liquidación y NO agotado
+        const badge = document.createElement('div');
+        badge.className = 'liquidacion-label';
+        badge.textContent = 'LIQUIDACIÓN';
         card.appendChild(badge);
       }
 
@@ -552,7 +528,7 @@
     pDescripcionEl.value = '';
     pCategoriaEl.value   = 'navidad';
     pAgotadoEl.checked   = false;
-    pLiquidacionEl.checked = false; // Inicializar nuevo campo
+    pLiquidacionEl.checked = false; // Nuevo: resetear liquidacion
     pImagenInputEl.value = '';
     previewImagenEl.innerHTML = '';
 
@@ -594,7 +570,7 @@
     pDescripcionEl.value = prod.descripcion || '';
     pCategoriaEl.value   = prod.categoria || 'navidad';
     pAgotadoEl.checked   = !!prod.agotado;
-    pLiquidacionEl.checked = !!prod.liquidacion; // Cargar valor de liquidación
+    pLiquidacionEl.checked = !!prod.liquidacion; // Nuevo: Cargar liquidacion
 
     urlImagenActual = prod.imagen_url || null;
     archivoImagenActual = null;
@@ -636,7 +612,6 @@
 
   // ------------------ SUBIR IMAGEN A SUPABASE STORAGE ------------------
   async function subirImagenASupabase(file) {
-    // Código para subir imagen (sin cambios)
     const ext = file.name.split('.').pop();
     const nombreLimpio = file.name.replace(/\s+/g, '_').toLowerCase();
     const fileName = `${Date.now()}_${nombreLimpio}`;
@@ -687,7 +662,7 @@
     const descripcion = pDescripcionEl.value.trim();
     const categoria   = pCategoriaEl.value;
     const agotado     = pAgotadoEl.checked;
-    const liquidacion = pLiquidacionEl.checked; // Obtener valor de liquidación (Nuevo)
+    const liquidacion = pLiquidacionEl.checked; // Nuevo: obtener estado
 
     if (!nombre || precio <= 0) {
       alert('Nombre y precio deben ser válidos');
@@ -715,7 +690,7 @@
         categoria,
         imagen_url: imagenFinalUrl,
         agotado,
-        liquidacion // Incluir en los datos a guardar
+        liquidacion // Nuevo: incluir en los datos
       };
 
       if (!editandoId) {
