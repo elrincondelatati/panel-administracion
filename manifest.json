@@ -2,7 +2,7 @@
   "name": "Admin Tati",
   "short_name": "Admin",
   "description": "Panel de administración y gestión de productos para El Rincón de la Tati.",
-  "start_url": "/index.html", 
+  "start_url": "/panel-administracion/index.html", 
   "display": "standalone",
   "background_color": "#FFE8D9",
   "theme_color": "#B71C1C",
